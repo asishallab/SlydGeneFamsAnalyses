@@ -1,0 +1,74 @@
+---
+title: "SlydGeneFamsAnalyses - Usage Guide"
+author: "Dr. Asis Hallab <a.hallab@fz-juelich.de>"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Installation
+
+Install the dependencies from within an interactive R shell:
+```{r}
+require(devtools)
+install_github("groupschoof/AHRD_on_gene_clusters")
+install_github("asishallab/GeneFamilies")
+```
+
+Now from within the root directory of this package execute:
+```bash
+R COMMAND INSTALL .
+```
+
+## Setup the material
+
+This package needs to be provided with the respective coding sequences, gene families, and the phylogenetic trees of these gene families to enable phylogeny based detection of positive selection using HyPhy.
+
+### Generate database (RData) of coding sequences
+
+Download the following files into a directory `material` using `wget`:
+
+```bash
+# cd material
+wget https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_cds_20110103_representative_gene_model_updated
+wget http://www.genoscope.cns.fr/externe/Download/Projets/Projet_ML/data/12X/annotation/Vitis_vinifera_mRNA.fa.gz
+wget ftp://ftp.solgenomics.net/tomato_genome/annotation/ITAG3.2_release/ITAG3.2_CDS.fasta
+wget ftp://ftp.solgenomics.net/genomes/Solanum_tuberosum/annotation/PGSC_3.4/PGSC_DM_v3.4_cds.fasta.zip
+wget ftp://ftp.solgenomics.net/genomes/Solanum_pennellii/annotations/Spenn-v2-cds-annot.fa
+# create a symolic link to the coding sequences of yet not published genome of "Solanum lyd"
+ln -s ./ftp.solgenomics.net/Slyd0.6/genome/SlydLA2951_v0.6_cds_all.fasta .
+```
+
+Note, that the above downloads were last executed in April 2019.
+
+### Sanitize coding sequence identifiers for Solanum tuberosum
+
+Unfortunately the scientists working on Solanum tuberosum decided to use different gene identifiers for amino-acid- and coding-sequences. We need to map the former onto the latter:
+```bash
+grep -P '^>' Solanum_tuberosum_v3.4_cds.fa | sed -e 's/^>//' -e 's/ Protein//' -e 's/\t$//' > Solanum_tuberosum_v3.4_cds_ID_mappings.tsv
+grep -P '^>' Solanum_tuberosum_v3.4_peptide.fa | sed -e 's/^>//' -e 's/ Protein.*$//' -e 's/\t$//' -e 's/\s\+/\t/' > Solanum_tuberosum_v3.4_peptide_ID_mappings.tsv
+```
+
+Then in an interactive R shell
+```{r}
+stu.cds.fa <- read.fasta('./Solanum_tuberosum_v3.4_cds.fa', seqtype='DNA', strip.desc=T, as.string=T )
+names(stu.cds.fa) <- sub("^[^\t]+\t", "", names(stu.cds.fa) )
+stu.cds <- read.table( './Solanum_tuberosum_v3.4_cds_ID_mappings.tsv', sep="\t", stringsAsFactors=F )
+stu.aas <- read.table( './Solanum_tuberosum_v3.4_peptide_ID_mappings.tsv', sep="\t", stringsAsFactors=F )
+stu.id.maps <- merge(stu.cds, stu.aas, by='V2')
+rownames(stu.id.maps) <- stu.id.maps$V2
+stu.cds.fa.san <- stu.cds.fa[ which( names(stu.cds.fa) %in% stu.id.maps$V2 ) ]
+names(stu.cds.fa.san) <- unlist(lapply(names(stu.cds.fa.san), function(x) stu.id.maps[[x,'V1.y']] ))
+write.fasta(stu.cds.fa.san, names(stu.cds.fa.san), './Solanum_tuberosum_v3.4_cds_matching_peptides.fa')
+```
+
+### Load the material into this R package
+
+Now run the following R script to create the binary database of coding sequences:
+```bash
+# From the root of this project
+Rscript ./inst/init_coding_sequences.R --inputdir ../material --outdir ./data
+```
