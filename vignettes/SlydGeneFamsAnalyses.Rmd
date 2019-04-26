@@ -72,7 +72,7 @@ Load and parse the material produced by Orthofinder.
 Now run the following R script to create the binary database of coding sequences:
 ```bash
 # From the root of this project
-Rscript ./inst/init_coding_sequences.R --inputdir ../material --outdir ./data
+Rscript ./exec/init_coding_sequences.R --inputdir ../material --outdir ./data
 ```
 
 Within a designated working directory create a sub-directory for each gene
@@ -80,7 +80,7 @@ family and write into it the sanitized multiple amino acid alignment and
 phylogenetic tree. To do so, first load all gene families and store them as a
 bindary database in this package:
 ```bash
-Rscript ./inst/readAndParseOrthogroupsTxt.R \
+Rscript ./exec/readAndParseOrthogroupsTxt.R \
   --orthogroupsTxt ../material/ftp.solgenomics.net/Slyd0.6/gene_families/Results_Apr03/Orthogroups/Orthogroups.txt \
   --orthogroupsMSADir ../material/ftp.solgenomics.net/Slyd0.6/gene_families/Results_Apr03/MultipleSequenceAlignments \
   --orthogroupsTreesDir ../material/ftp.solgenomics.net/Slyd0.6/gene_families/Results_Apr03/Resolved_Gene_Trees \
@@ -90,7 +90,7 @@ Rscript ./inst/readAndParseOrthogroupsTxt.R \
 ### Generate the multiple coding sequence alignment for each gene family
 
 ```bash
-Rscript ./inst/generateCodingSequenceAlignments.R \
+Rscript ./exec/generateCodingSequenceAlignments.R \
   --workDir ../working_dir
 ```
 
