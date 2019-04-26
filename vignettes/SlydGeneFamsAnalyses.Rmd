@@ -96,3 +96,8 @@ Rscript ./exec/generateCodingSequenceAlignments.R \
 
 ### Generate the MEME input files for HyPhy
 
+```bash
+Rscript ./exec/generateMemeHyPhyBatchFiles.R \
+  --workDir ../working_dir \
+  --HyPhyBatchFilesDir /mnt/data/asis/software/lib/hyphy/TemplateBatchFiles
+```
