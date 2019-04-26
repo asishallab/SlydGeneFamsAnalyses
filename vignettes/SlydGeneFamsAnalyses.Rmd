@@ -48,13 +48,13 @@ Note, that the above downloads were last executed in April 2019.
 
 Unfortunately the scientists working on Solanum tuberosum decided to use different gene identifiers for amino-acid- and coding-sequences. We need to map the former onto the latter:
 ```bash
-grep -P '^>' Solanum_tuberosum_v3.4_cds.fa | sed -e 's/^>//' -e 's/ Protein//' -e 's/\t$//' > Solanum_tuberosum_v3.4_cds_ID_mappings.tsv
-grep -P '^>' Solanum_tuberosum_v3.4_peptide.fa | sed -e 's/^>//' -e 's/ Protein.*$//' -e 's/\t$//' -e 's/\s\+/\t/' > Solanum_tuberosum_v3.4_peptide_ID_mappings.tsv
+grep -P '^>' PGSC_DM_v3.4_cds.fasta | sed -e 's/^>//' -e 's/ Protein//' -e 's/\t$//' > Solanum_tuberosum_v3.4_cds_ID_mappings.tsv
+grep -P '^>' PGSC_DM_v3.4_pep.fasta | sed -e 's/^>//' -e 's/ Protein.*$//' -e 's/\t$//' -e 's/\s\+/\t/' > Solanum_tuberosum_v3.4_peptide_ID_mappings.tsv
 ```
 
 Then in an interactive R shell
 ```{r}
-stu.cds.fa <- read.fasta('./Solanum_tuberosum_v3.4_cds.fa', seqtype='DNA', strip.desc=T, as.string=T )
+stu.cds.fa <- read.fasta('./PGSC_DM_v3.4_cds.fasta', seqtype='DNA', strip.desc=T, as.string=T )
 names(stu.cds.fa) <- sub("^[^\t]+\t", "", names(stu.cds.fa) )
 stu.cds <- read.table( './Solanum_tuberosum_v3.4_cds_ID_mappings.tsv', sep="\t", stringsAsFactors=F )
 stu.aas <- read.table( './Solanum_tuberosum_v3.4_peptide_ID_mappings.tsv', sep="\t", stringsAsFactors=F )
@@ -65,10 +65,34 @@ names(stu.cds.fa.san) <- unlist(lapply(names(stu.cds.fa.san), function(x) stu.id
 write.fasta(stu.cds.fa.san, names(stu.cds.fa.san), './Solanum_tuberosum_v3.4_cds_matching_peptides.fa')
 ```
 
-### Load the material into this R package
+### Prepare the analyses
+
+Load and parse the material produced by Orthofinder.
 
 Now run the following R script to create the binary database of coding sequences:
 ```bash
 # From the root of this project
 Rscript ./inst/init_coding_sequences.R --inputdir ../material --outdir ./data
 ```
+
+Within a designated working directory create a sub-directory for each gene
+family and write into it the sanitized multiple amino acid alignment and
+phylogenetic tree. To do so, first load all gene families and store them as a
+bindary database in this package:
+```bash
+Rscript ./inst/readAndParseOrthogroupsTxt.R \
+  --orthogroupsTxt ../material/ftp.solgenomics.net/Slyd0.6/gene_families/Results_Apr03/Orthogroups/Orthogroups.txt \
+  --orthogroupsMSADir ../material/ftp.solgenomics.net/Slyd0.6/gene_families/Results_Apr03/MultipleSequenceAlignments \
+  --orthogroupsTreesDir ../material/ftp.solgenomics.net/Slyd0.6/gene_families/Results_Apr03/Resolved_Gene_Trees \
+  --workDir ../working_dir
+```
+
+### Generate the multiple coding sequence alignment for each gene family
+
+```bash
+Rscript ./inst/generateCodingSequenceAlignments.R \
+  --workDir ../working_dir
+```
+
+### Generate the MEME input files for HyPhy
+
