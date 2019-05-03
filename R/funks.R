@@ -198,7 +198,8 @@ loadAndSanitizeTrees <- function(path.2.trees.dir, working.dir, gene.families.na
         write.tree(fam.tree, file.path(gene.fam.wd, paste0(gene.fam, 
             "_phyl_tree_orig_gene_ids.newick")))
         fam.gene.id.maps <- geneNameMappings(gene.fam.wd, gene.fam)
-        fam.tree$tip.label <- mapOriginalToSanitizedNames(fam.tree$tip.label, fam.gene.id.maps)
+        fam.tree$tip.label <- mapOriginalToSanitizedNames(fam.tree$tip.label, 
+            fam.gene.id.maps)
         write.tree(fam.tree, file.path(gene.fam.wd, paste0(gene.fam, 
             "_phyl_tree.newick")))
         NULL
@@ -230,11 +231,13 @@ generateCodingSequenceMSAs <- function(working.dir, gene.families.names = names(
         gene.fam.wd <- normalizePath(file.path(working.dir, gene.fam))
         fam.cds <- all.cds[gene.families[[gene.fam]]]
         fam.aa.msa <- seqinr::read.fasta(file.path(gene.fam.wd, paste0(gene.fam, 
-            "_AA_MSA_orig_gene_ids.fa")), seqtype = "AA", as.string = TRUE, strip.desc = TRUE)
+            "_AA_MSA_orig_gene_ids.fa")), seqtype = "AA", as.string = TRUE, 
+            strip.desc = TRUE)
         fam.cds.msa <- GeneFamilies::alignCDSSetWithAlignedAAsAsGuide(fam.cds, 
             fam.aa.msa)
         fam.gene.id.maps <- geneNameMappings(gene.fam.wd, gene.fam)
-        names(fam.cds.msa) <- mapOriginalToSanitizedNames(names(fam.cds.msa), fam.gene.id.maps)
+        names(fam.cds.msa) <- mapOriginalToSanitizedNames(names(fam.cds.msa), 
+            fam.gene.id.maps)
         seqinr::write.fasta(fam.cds.msa, names(fam.cds.msa), file.path(gene.fam.wd, 
             paste0(gene.fam, "_CDS_MSA.fa")))
         NULL
@@ -282,4 +285,63 @@ generateMemeBatchFiles <- function(working.dir, hyphy.batch.files.dir,
         NULL
     })
     TRUE
+}
+
+#' Within the argument 'work.dir' all gene family work dirs are looked up that
+#' have HyPhy MEME result files. These are parsed and sites showing significant
+#' evidence for positive selection are identified. Subsequently leaves of the
+#' phylogenetic tree (proteins) that show significant evidence for positive
+#' selection at the identified sites are also identified. 
+#'
+#' @param work.dir - The valid file path to the directory in which each
+#' family's MEME results are stored.
+#' @param p.adjust.method - The argument passed to \code{base::p.adjust} as the
+#' method to apply for correcting p-values for multiple hypotheses testing.
+#' @param pval.cutoff - The significance level for corrected p-values. Default
+#' is \code{0.05}.
+#' @param empirical.bayes.factor.cutoff - The significance level to be apliad
+#' to empirical Bayes Factor values. Default is \code{100}.
+#' @param phyl.tree.leaf.regex - The regular expression to be applied to
+#' distinguish inner tree nodes from leaf nodes. Default is
+#' \code{'^PROT\\d+$'}.
+#' @param report.original.gene.names - Boolean switch to control whether the
+#' genes found to be subject to positive selection whall be reported with their
+#' original and not their sanitized names. See
+#' \code{SolycGeneFams::mapOriginalToSanitizedNames} and
+#' \code{SolycGeneFams::geneNameMappings} for more details. Default of this
+#' argument is \code{TRUE}.
+#'
+#' @return An instance of \code{base::list} with names the families for which
+#' MEME results were found and values lists with two entries 'MEME.sites' and
+#' 'MEME.branches', the respectively found subjects to positive selection
+#' passing the significance levels.
+#' @export
+readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.05, 
+    empirical.bayes.factor.cutoff = 100, phyl.tree.leaf.regex = "^PROT\\d+$", report.original.gene.names=TRUE) {
+    norm.wd <- normalizePath(work.dir)
+    fams.meme.outs <- system(paste("find", norm.wd, "-type f", "-name '*_HyPhy_MEME_output.txt'"), 
+        intern = TRUE)
+    fams.meme.branches <- paste0(fams.meme.outs, ".branches")
+    fam.nms <- sub("^.*/", "", sub("_HyPhy_MEME_output.txt$", "", 
+        fams.meme.outs))
+    names(fams.meme.outs) <- fam.nms
+    names(fams.meme.branches) <- fam.nms
+    setNames(mclapply(fam.nms, function(fam) {
+        m.o <- read.table(fams.meme.outs[[fam]], sep = ",", header = TRUE, 
+            stringsAsFactors = FALSE)
+        m.o$p.adj <- p.adjust(m.o$p.value, method = p.adjust.method)
+        m.sites <- which(m.o$p.adj <= pval.cutoff)
+        if (length(m.sites) > 0) {
+            m.b <- read.table(fams.meme.branches[[fam]], sep = ",", 
+                header = TRUE, stringsAsFactors = FALSE, skip = 2)
+            m.branches <- unique(m.b[which(m.b$Site %in% m.sites & m.b$EmpiricalBayesFactor >= 
+                empirical.bayes.factor.cutoff & grepl(phyl.tree.leaf.regex, 
+                m.b$Branch)), "Branch"])
+            if (length(m.branches) > 0 && report.original.gene.names) {
+              fam.wd <- sub("/OG\\d+_HyPhy_MEME_output.txt$", "", fams.meme.outs[[fam]])
+              m.branches <- mapSanitizedToOriginalNames(m.branches, geneNameMappings(fam.wd,fam))
+            }
+            list(MEME.sites = m.sites, MEME.branches = m.branches)
+        } else NULL
+    }), fam.nms)
 }
