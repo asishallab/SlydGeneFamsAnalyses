@@ -317,7 +317,8 @@ generateMemeBatchFiles <- function(working.dir, hyphy.batch.files.dir,
 #' passing the significance levels.
 #' @export
 readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.05, 
-    empirical.bayes.factor.cutoff = 100, phyl.tree.leaf.regex = "^PROT\\d+$", report.original.gene.names=TRUE) {
+    empirical.bayes.factor.cutoff = 100, phyl.tree.leaf.regex = "^PROT\\d+$", 
+    report.original.gene.names = TRUE, gene.family.sizes = gene.families.sizes) {
     norm.wd <- normalizePath(work.dir)
     fams.meme.outs <- system(paste("find", norm.wd, "-type f", "-name '*_HyPhy_MEME_output.txt'"), 
         intern = TRUE)
@@ -332,16 +333,45 @@ readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.0
         m.o$p.adj <- p.adjust(m.o$p.value, method = p.adjust.method)
         m.sites <- which(m.o$p.adj <= pval.cutoff)
         if (length(m.sites) > 0) {
+            m.sites.tbl <- data.frame(MEME.site = m.sites, P.adj = m.o[m.sites, 
+                "p.adj"], stringsAsFactors = FALSE)
             m.b <- read.table(fams.meme.branches[[fam]], sep = ",", 
                 header = TRUE, stringsAsFactors = FALSE, skip = 2)
-            m.branches <- unique(m.b[which(m.b$Site %in% m.sites & m.b$EmpiricalBayesFactor >= 
-                empirical.bayes.factor.cutoff & grepl(phyl.tree.leaf.regex, 
-                m.b$Branch)), "Branch"])
-            if (length(m.branches) > 0 && report.original.gene.names) {
-              fam.wd <- sub("/OG\\d+_HyPhy_MEME_output.txt$", "", fams.meme.outs[[fam]])
-              m.branches <- mapSanitizedToOriginalNames(m.branches, geneNameMappings(fam.wd,fam))
-            }
-            list(MEME.sites = m.sites, MEME.branches = m.branches)
+            m.branches <- unique(m.b[which(m.b$Site %in% m.sites & 
+                m.b$EmpiricalBayesFactor >= empirical.bayes.factor.cutoff & 
+                grepl(phyl.tree.leaf.regex, m.b$Branch)), c("Site", 
+                "Branch")])
+            meme.branches.df <- if (nrow(m.branches) > 0) {
+                fam.wd <- sub("/OG\\d+_HyPhy_MEME_output.txt$", "", 
+                  fams.meme.outs[[fam]])
+                if (report.original.gene.names) {
+                  m.branches$Branch <- mapSanitizedToOriginalNames(m.branches$Branch, 
+                    geneNameMappings(fam.wd, fam))
+                  fam.aa.msa.file <- normalizePath(file.path(fam.wd, 
+                    paste0(fam, "_AA_MSA_orig_gene_ids.fa")))
+                } else {
+                  fam.aa.msa.file <- normalizePath(file.path(fam.wd, 
+                    paste0(fam, "_AA_MSA.fa")))
+                }
+                m.b.unq <- unique(m.branches$Branch)
+                fam.aa.msa <- read.fasta(fam.aa.msa.file, seqtype = "AA", 
+                  as.string = TRUE, strip.desc = TRUE)
+                Reduce(rbind, lapply(m.b.unq, function(meme.branch) {
+                  align.sites <- sort(unique(m.branches[which(m.branches$Branch == 
+                    meme.branch), "Site"]))
+                  Reduce(rbind, lapply(align.sites, function(align.site) {
+                    unalign.site <- unalignedAAforAlignedAAPos(meme.branch, 
+                      align.site, fam.aa.msa)
+                    meme.site.p.adj <- m.sites.tbl[[which(m.sites.tbl$MEME.site == 
+                      align.site), "P.adj"]]
+                    data.frame(Protein = meme.branch, Gene.Family = fam, 
+                      Gene.Family.Size = gene.family.sizes[[fam]], 
+                      unaligned.pos.sel.codon = unalign.site, aligned.pos.sel.codon = align.site, 
+                      MEME.site.p.adj = meme.site.p.adj, stringsAsFactors = FALSE)
+                  }))
+                }))
+            } else NULL
+            list(MEME.sites = m.sites.tbl, MEME.branches = meme.branches.df)
         } else NULL
     }), fam.nms)
 }
