@@ -9,7 +9,7 @@ option_list = list(
     metavar = "character"
   ),
   make_option(
-    c("-h", "--HyPhyBatchFilesDir"),
+    c("-b", "--HyPhyBatchFilesDir"),
     type = "character",
     default = NULL,
     help = "The sub-directory of the HyPhy installation in which to find HyPhy's Batch-Files.",
@@ -27,7 +27,7 @@ option_list = list(
 opt_parser = OptionParser(option_list = option_list)
 args = parse_args(opt_parser)
 
-if (is.null(args$workDir) || is.null(args$HyPhyBatchFilesDir) {
+if (is.null(args$workDir) || is.null(args$HyPhyBatchFilesDir)) {
     stop("Please specify the required argument '--workDir' and '--HyPhyBatchFilesDir'.")
 }
 
