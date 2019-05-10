@@ -375,3 +375,73 @@ readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.0
         } else NULL
     }), fam.nms)
 }
+
+#' Uses Bioconductor's 'msa' package to pretty print the alignment of the
+#' argument gene family highlighting the genes and amino acids found to be
+#' subject to positive selection.
+#'
+#' @param fam.fir - The path to the working directory of the argument gene
+#' family. This dir should contain the multiple sequence alignment file and
+#' will be used to write the alignment plots into.
+#' @param aa.msa.file - The name, not path, of the multiple sequence alignment
+#' file to be used. It is of key importance that the protein identifiers in the
+#' alignment file are identical to those in the argument
+#' 'selected.pos.and.genes.tbl' column 'Protein'.
+#' @param selected.pos.and.genes.tbl - An instance of \code{base::data.frame}
+#' holding information about positively selected proteins, aligned amino acid
+#' positions and their corresponding unaligned positions. See function
+#' \code{SlydGeneFamsAnalyses::readMemeResults} for details on how this table
+#' can be generated.
+#' @param plot.pdf.prefix - The file name without file extension ('.pdf') of
+#' the plot(s) that will be generated and saved in the argument 'fam.dir'.
+#' @param max.width - The maximum number of aligned amino acid positions to
+#' include in a single plot. If the selected positions exceed this range
+#' several plots will be created.
+#' @param before.sel.pos.offset - The offset before the first selected position
+#' to be included in the plot. Default is \code{5}.
+#' @param after.sel.pos.offset - The offset after the first selected position
+#' to be included in the plot. Default is \code{5}.
+#'
+#' @return TRUE if and only if no error occurs
+#' @export
+printAaMsaWithSelection <- function(fam.dir, aa.msa.file, selected.pos.and.genes.tbl, 
+    plot.pdf.prefix, max.width = 300, before.sel.pos.offset = 5, after.sel.pos.offset = 5) {
+    begin.codon <- min(selected.pos.and.genes.tbl$aligned.pos.sel.codon) - 
+        before.sel.pos.offset
+    end.codon <- max(selected.pos.and.genes.tbl$aligned.pos.sel.codon) + 
+        after.sel.pos.offset
+    m <- Biostrings::readAAMultipleAlignment(normalizePath(file.path(fam.dir, 
+        aa.msa.file)))
+    gene.name.color.tex <- paste(unlist(lapply(selected.pos.and.genes.tbl$Protein, 
+        function(sel.gene) {
+            i.gene <- which(names(m) == sel.gene)
+            paste0("\\namecolor{", i.gene, "}{Magenta}")
+        })), collapse = "\n")
+    gene.tex.lst <- paste(unlist(lapply(selected.pos.and.genes.tbl$Protein, 
+        function(sel.gene) {
+            i.gene <- which(names(m) == sel.gene)
+            paste0(i.gene, "..", i.gene)
+        })), collapse = ",")
+    frst.prot <- intersect(names(m), selected.pos.and.genes.tbl$Protein)[[1]]
+    frst.prot.i <- which(names(m) == frst.prot)
+    for (i in ceiling((end.codon - begin.codon)/max.width)) {
+        beg.pos <- begin.codon + (i - 1) * max.width
+        if (i > 1) 
+            beg.pos <- beg.pos + 1
+        end.pos <- min(end.codon, (i * max.width + begin.codon))
+        unalign.sel.pos.first.prot <- selected.pos.and.genes.tbl[with(selected.pos.and.genes.tbl, 
+            which(aligned.pos.sel.codon >= beg.pos & aligned.pos.sel.codon <= 
+                end.pos & Protein == frst.prot)), "aligned.pos.sel.codon"]
+        pos.tex.lst <- paste(unlist(lapply(sel.pos, function(s.p) {
+            paste0(s.p, "..", s.p)
+        })), collapse = ",")
+        pos.emph.tex <- paste0("\\frameblock{", frst.prot.i, "}{", 
+            pos.tex.lst, "}{Cyan[1pt]}", "\n", "\\emphblock{", frst.prot.i, 
+            "}{", pos.tex.lst, "}")
+        msa::msaPrettyPrint(m, c(beg.pos, end.pos), file = normalizePath(file.path(fam.dir, 
+            paste0(plot.pdf.prefix, "_", beg.pos, "-", end.pos, ".pdf"))), 
+            shadingMode = "functional", askForOverwrite = FALSE, shadingModeArg = "chemical", 
+            output = "pdf", furtherCode = paste(gene.name.color.tex, 
+                pos.emph.tex, sep = "\n"), showNumbering = "none")
+    }
+}

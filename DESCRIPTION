@@ -12,7 +12,8 @@ Depends:
     parallel (>= 3.5.2),
     seqinr (>= 3.4.5),
     optparse (>= 1.6.1),
-    GeneFamilies (>= 0.1)
+    GeneFamilies (>= 0.1),
+    msa (>= 1.14.0)
 Suggests:
     roxygen2
 RoxygenNote: 6.1.1

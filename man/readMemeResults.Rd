@@ -10,7 +10,9 @@ selection at the identified sites are also identified.}
 \usage{
 readMemeResults(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.05,
   empirical.bayes.factor.cutoff = 100,
-  phyl.tree.leaf.regex = "^PROT\\\\d+$")
+  phyl.tree.leaf.regex = "^PROT\\\\d+$",
+  report.original.gene.names = TRUE,
+  gene.family.sizes = gene.families.sizes)
 }
 \arguments{
 \item{work.dir}{- The valid file path to the directory in which each
@@ -28,6 +30,13 @@ to empirical Bayes Factor values. Default is \code{100}.}
 \item{phyl.tree.leaf.regex}{- The regular expression to be applied to
 distinguish inner tree nodes from leaf nodes. Default is
 \code{'^PROT\\d+$'}.}
+
+\item{report.original.gene.names}{- Boolean switch to control whether the
+genes found to be subject to positive selection whall be reported with their
+original and not their sanitized names. See
+\code{SolycGeneFams::mapOriginalToSanitizedNames} and
+\code{SolycGeneFams::geneNameMappings} for more details. Default of this
+argument is \code{TRUE}.}
 }
 \value{
 An instance of \code{base::list} with names the families for which
