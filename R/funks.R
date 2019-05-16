@@ -392,56 +392,49 @@ readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.0
 #' positions and their corresponding unaligned positions. See function
 #' \code{SlydGeneFamsAnalyses::readMemeResults} for details on how this table
 #' can be generated.
-#' @param plot.pdf.prefix - The file name without file extension ('.pdf') of
-#' the plot(s) that will be generated and saved in the argument 'fam.dir'.
-#' @param max.width - The maximum number of aligned amino acid positions to
-#' include in a single plot. If the selected positions exceed this range
-#' several plots will be created.
+#' @param plot.pdf.prefix - The file name with file extension ('.pdf') of the
+#' plot that will be generated and saved in the argument 'fam.dir'. Default is
+#' \code{sub('.fa', '', aa.msa.file, fixed=TRUE)}.
 #' @param before.sel.pos.offset - The offset before the first selected position
 #' to be included in the plot. Default is \code{5}.
 #' @param after.sel.pos.offset - The offset after the first selected position
 #' to be included in the plot. Default is \code{5}.
 #'
-#' @return TRUE if and only if no error occurs
+#' @return The result of invoking \code{msa::msaPrettyPrint(...)}.
 #' @export
 printAaMsaWithSelection <- function(fam.dir, aa.msa.file, selected.pos.and.genes.tbl, 
-    plot.pdf.prefix, max.width = 300, before.sel.pos.offset = 5, after.sel.pos.offset = 5) {
+    plot.pdf.prefix = sub(".fa", "", aa.msa.file, fixed = TRUE), 
+    before.sel.pos.offset = 5, after.sel.pos.offset = 5) {
     begin.codon <- min(selected.pos.and.genes.tbl$aligned.pos.sel.codon) - 
         before.sel.pos.offset
     end.codon <- max(selected.pos.and.genes.tbl$aligned.pos.sel.codon) + 
         after.sel.pos.offset
     m <- Biostrings::readAAMultipleAlignment(normalizePath(file.path(fam.dir, 
         aa.msa.file)))
+    aa.msa.prot.ids <- names(unmasked(m))
     gene.name.color.tex <- paste(unlist(lapply(selected.pos.and.genes.tbl$Protein, 
         function(sel.gene) {
-            i.gene <- which(names(m) == sel.gene)
+            i.gene <- which(aa.msa.prot.ids == sel.gene)
             paste0("\\namecolor{", i.gene, "}{Magenta}")
         })), collapse = "\n")
     gene.tex.lst <- paste(unlist(lapply(selected.pos.and.genes.tbl$Protein, 
         function(sel.gene) {
-            i.gene <- which(names(m) == sel.gene)
-            paste0(i.gene, "..", i.gene)
+            which(aa.msa.prot.ids == sel.gene)
         })), collapse = ",")
-    frst.prot <- intersect(names(m), selected.pos.and.genes.tbl$Protein)[[1]]
-    frst.prot.i <- which(names(m) == frst.prot)
-    for (i in ceiling((end.codon - begin.codon)/max.width)) {
-        beg.pos <- begin.codon + (i - 1) * max.width
-        if (i > 1) 
-            beg.pos <- beg.pos + 1
-        end.pos <- min(end.codon, (i * max.width + begin.codon))
-        unalign.sel.pos.first.prot <- selected.pos.and.genes.tbl[with(selected.pos.and.genes.tbl, 
-            which(aligned.pos.sel.codon >= beg.pos & aligned.pos.sel.codon <= 
-                end.pos & Protein == frst.prot)), "aligned.pos.sel.codon"]
-        pos.tex.lst <- paste(unlist(lapply(sel.pos, function(s.p) {
-            paste0(s.p, "..", s.p)
-        })), collapse = ",")
-        pos.emph.tex <- paste0("\\frameblock{", frst.prot.i, "}{", 
-            pos.tex.lst, "}{Cyan[1pt]}", "\n", "\\emphblock{", frst.prot.i, 
-            "}{", pos.tex.lst, "}")
-        msa::msaPrettyPrint(m, c(beg.pos, end.pos), file = normalizePath(file.path(fam.dir, 
-            paste0(plot.pdf.prefix, "_", beg.pos, "-", end.pos, ".pdf"))), 
-            shadingMode = "functional", askForOverwrite = FALSE, shadingModeArg = "chemical", 
-            output = "pdf", furtherCode = paste(gene.name.color.tex, 
-                pos.emph.tex, sep = "\n"), showNumbering = "none")
-    }
+    frst.prot <- intersect(aa.msa.prot.ids, selected.pos.and.genes.tbl$Protein)[[1]]
+    frst.prot.i <- which(aa.msa.prot.ids == frst.prot)
+    unalign.sel.pos <- sort(unique(selected.pos.and.genes.tbl[with(selected.pos.and.genes.tbl, 
+        which(aligned.pos.sel.codon >= begin.codon & aligned.pos.sel.codon <= 
+            end.codon)), "unaligned.pos.sel.codon"]))
+    pos.tex.lst <- paste(unlist(lapply(unalign.sel.pos, function(s.p) {
+        paste0(s.p, "..", s.p)
+    })), collapse = ",")
+    pos.emph.tex <- paste0("\\frameblock{", frst.prot.i, "}{", pos.tex.lst, 
+        "}{Cyan[1pt]}", "\n", "\\emphblock{", frst.prot.i, "}{", pos.tex.lst, 
+        "}")
+    msa::msaPrettyPrint(m, c(begin.codon, end.codon), file = file.path(fam.dir, 
+        paste0(plot.pdf.prefix, "_", begin.codon, "-", end.codon, 
+            ".pdf")), shadingMode = "functional", askForOverwrite = FALSE, 
+        shadingModeArg = "chemical", output = "pdf", furtherCode = paste(gene.name.color.tex, 
+            pos.emph.tex, sep = "\n"), showNumbering = "none")
 }
