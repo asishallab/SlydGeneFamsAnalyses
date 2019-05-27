@@ -401,126 +401,41 @@ parseHmmer3DomTableOut <- function(path.2.hmmer3.domtbl.out) {
     dom.tbl
 }
 
-#' Uses Bioconductor's 'msa' package to pretty print the alignment of the
-#' argument gene family highlighting the genes and amino acids found to be
-#' subject to positive selection.
-#'
-#' @param fam.fir - The path to the working directory of the argument gene
-#' family. This dir should contain the multiple sequence alignment file and
-#' will be used to write the alignment plots into.
-#' @param aa.msa.file - The name, not path, of the multiple sequence alignment
-#' file to be used. It is of key importance that the protein identifiers in the
-#' alignment file are identical to those in the argument
-#' 'selected.pos.and.genes.tbl' column 'Protein'.
-#' @param selected.pos.and.genes.tbl - An instance of \code{base::data.frame}
-#' holding information about positively selected proteins, aligned amino acid
-#' positions and their corresponding unaligned positions. See function
-#' \code{SlydGeneFamsAnalyses::readMemeResults} for details on how this table
-#' can be generated.
-#' @param pfam.tbl - An instance of \code{base::data.frame} the result from
-#' invoking \code{SlydGeneFamsAnalyses::parseHmmer3DomTableOut}. If NULL this
-#' will be ignored. If set and some protein domains fall within the displayed
-#' region of the MSA the domains will be tinted. See CTAN texshade
-#' documentation for more details.
-#' @param plot.pdf.prefix - The file name with file extension ('.pdf') of the
-#' plot that will be generated and saved in the argument 'fam.dir'. Default is
-#' \code{sub('.fa', '', aa.msa.file, fixed=TRUE)}.
-#' @param before.sel.pos.offset - The offset before the first selected position
-#' to be included in the plot. Default is \code{5}.
-#' @param after.sel.pos.offset - The offset after the first selected position
-#' to be included in the plot. Default is \code{5}.
-#'
-#' @return The result of invoking \code{msa::msaPrettyPrint(...)}.
-#' @export
-printAaMsaWithSelection <- function(fam.dir, aa.msa.file, selected.pos.and.genes.tbl, 
-    pfam.tbl, plot.pdf.prefix = sub(".fa", "", aa.msa.file, fixed = TRUE), 
-    before.sel.pos.offset = 5, after.sel.pos.offset = 5) {
-    begin.codon <- min(selected.pos.and.genes.tbl$aligned.pos.sel.codon) - 
-        before.sel.pos.offset
-    end.codon <- max(selected.pos.and.genes.tbl$aligned.pos.sel.codon) + 
-        after.sel.pos.offset
-    msa.fasta.path <- normalizePath(file.path(fam.dir, aa.msa.file))
-    m <- Biostrings::readAAMultipleAlignment(msa.fasta.path)
-    aa.msa.prot.ids <- names(unmasked(m))
-    gene.name.color.tex <- paste(unlist(lapply(selected.pos.and.genes.tbl$Protein, 
-        function(sel.gene) {
-            i.gene <- which(aa.msa.prot.ids == sel.gene)
-            paste0("\\namecolor{", i.gene, "}{Magenta}")
-        })), collapse = "\n")
-    
-    frameblocks.emphregions.tex <- paste(unlist(lapply(selected.pos.and.genes.tbl$Protein, 
-        function(sel.gene) {
-            gene.no <- which(aa.msa.prot.ids == sel.gene)
-            unalgnd.pos <- sort(unique(selected.pos.and.genes.tbl[which(selected.pos.and.genes.tbl$Protein == 
-                sel.gene), "unaligned.pos.sel.codon"]))
-            framebl.tex <- paste0("\\frameblock{", gene.no, "}{", 
-                paste(sapply(unalgnd.pos, function(u.p) {
-                  paste(u.p, u.p, sep = "..")
-                }), collapse = ","), "}{Cyan[1pt]}")
-            emphreg.tex <- paste0("\\emphregion{", gene.no, "}{", 
-                paste(sapply(unalgnd.pos, function(u.p) {
-                  paste(u.p, u.p, sep = "..")
-                }), collapse = ","), "}")
-            paste(framebl.tex, emphreg.tex, sep = "\n")
-        })), collapse = "\n")
-    
-    tinted.tex <- ""
-    feature.tex <- ""
-    caption.tex <- ""
-    if (!is.null(pfam.tbl)) {
-        msa.fa <- read.fasta(msa.fasta.path, seqtype = "AA", strip.desc = TRUE, 
-            as.string = TRUE)
-        prot.dom.lst <- list()
-        tinted.tex <- paste(unlist(lapply(1:nrow(pfam.tbl), function(i) {
-            prot <- pfam.tbl[[i, "query.name"]]
-            gene.no <- which(aa.msa.prot.ids == prot)
-            unalign.start <- pfam.tbl[[i, "ali.coord.from"]]
-            unalign.end <- pfam.tbl[[i, "ali.coord.to"]]
-            aligned.start <- alignedForUnalignedAAPos(prot, unalign.start, 
-                msa.fa)
-            aligned.end <- alignedForUnalignedAAPos(prot, unalign.end, 
-                msa.fa)
-            if (prot %in% aa.msa.prot.ids && aligned.start >= begin.codon && 
-                aligned.end <= end.codon) {
-                pdl.entry <- paste(pfam.tbl[[i, "target.accession"]], 
-                  pfam.tbl[[i, "this.domain.#"]], sep = " No.")
-                prot.dom.lst[[pdl.entry]] <<- c(min(prot.dom.lst[[pdl.entry]], 
-                  aligned.start), max(prot.dom.lst[[pdl.entry]], aligned.end))
-                paste0("\\tintregion{", gene.no, "}{", unalign.start, 
-                  "..", unalign.end, "}")
-            } else NULL
-        })), collapse = "\n")
-        first.prot <- aa.msa.prot.ids[[1]]
-        feat.pos <- c("top", "ttop", "tttop", "ttttop", "bottom", 
-            "bbottom", "bbbottom", "bbbbottom")
-        feat.pos.i <- 0
-        feature.tex <- paste(unlist(lapply(names(prot.dom.lst), function(prot.dom) {
-            first.prot.unalign.start <- unalignedAAforAlignedAAPos(first.prot, 
-                prot.dom.lst[[prot.dom]][[1]], msa.fa)
-            first.prot.unalign.end <- unalignedAAforAlignedAAPos(first.prot, 
-                prot.dom.lst[[prot.dom]][[2]], msa.fa)
-            feat.pos.i <<- if (feat.pos.i + 1 > length(feat.pos)) {
-                1
-            } else {
-                feat.pos.i + 1
-            }
-            paste0("\\feature{", feat.pos[[feat.pos.i]], "}{1}{", 
-                first.prot.unalign.start, "..", first.prot.unalign.end, 
-                "}{brace}{", prot.dom, "}")
-        })), collapse = "\n")
-        caption.tex <- paste0("\\showcaption[bottom]{Protein Domains:\\\\", 
-            paste(unlist(lapply(unique(names(prot.dom.lst)), function(prot.dom.nm) {
-                prot.dom.acc <- sub(" No\\.\\d+$", "", prot.dom.nm)
-                prot.dom.coords <- prot.dom.lst[[prot.dom.nm]]
-                paste0(prot.dom.nm, " (", prot.dom.coords[[1]], "-", 
-                  prot.dom.coords[[2]], ") - ", pfam.tbl[which(pfam.tbl$target.accession == 
-                    prot.dom.acc), "description.of.target"][[1]])
-            })), collapse = "\\\\"), "}")
-    }
-    msa::msaPrettyPrint(m, c(begin.codon, end.codon), file = file.path(fam.dir, 
-        paste0(plot.pdf.prefix, "_", begin.codon, "-", end.codon, 
-            ".pdf")), shadingMode = "functional", askForOverwrite = FALSE, 
-        shadingModeArg = "chemical", output = "pdf", furtherCode = paste("\\tintdefault{weak}", 
-            gene.name.color.tex, frameblocks.emphregions.tex, tinted.tex, 
-            caption.tex, caption.tex, feature.tex, sep = "\n"), showNumbering = "none")
+hmmer3DomTableOutToPseudoGFF3 <- function(path.2.hmmer3.domtbl.out, 
+    aa.msa, color = "lightblue") {
+    dom.tbl <- parseHmmer3DomTableOut(path.2.hmmer3.domtbl.out)
+    paste(unlist(lapply(1:nrow(dom.tbl), function(i) {
+        d.t.row <- dom.tbl[i, ]
+        gene.id <- d.t.row$query.name
+        dom.start <- alignedForUnalignedAAPos(gene.id, d.t.row$ali.coord.from, 
+            aa.msa)
+        dom.end <- alignedForUnalignedAAPos(gene.id, d.t.row$ali.coord.to, 
+            aa.msa)
+        if (is.na(dom.start) || is.na(dom.end)) 
+            browser()
+        paste(gene.id, ".", "gene", dom.start, dom.end, ".", "+", 
+            ".", paste0("Name=", d.t.row$target.accession, " ", d.t.row$description.of.target, 
+                ";Color=", color))
+    })), collapse = "\\n")
+}
+
+memeBranchesTblToPseudoGFF3 <- function(meme.branches.tbl, color = "lightgreen") {
+    paste(unlist(lapply(1:nrow(meme.branches.tbl), function(i) {
+        m.b.row <- meme.branches.tbl[i, ]
+        paste(m.b.row$Protein, ".", "gene", (m.b.row$aligned.pos.sel.codon - 
+            1), (m.b.row$aligned.pos.sel.codon + 1), ".", "+", ".", 
+            paste0("Name=P;Color=", color))
+    })), collapse = "\\n")
+}
+
+generateInteractiveMsaPlot <- function(path.2.msa.fasta, meme.branches.tbl, 
+    pfam.hmmer3.domtbl, output.dir, brew.template = normalizePath(file.path(path.package("SlydGeneFamsAnalyses"), 
+        "msa_template_brew.html"))) {
+    msa.fasta <- paste(readLines(path.2.msa.fasta), collapse = "\\n")
+    aa.msa <- read.fasta(path.2.msa.fasta, seqtype = "AA", strip.desc = TRUE, 
+        as.string = TRUE)
+    gff3 <- paste(hmmer3DomTableOutToPseudoGFF3(pfam.hmmer3.domtbl, 
+        aa.msa), memeBranchesTblToPseudoGFF3(meme.branches.tbl), sep = "\\n")
+    out.html <- sub("\\.[^.]+", ".html", sub("^.*/", "", path.2.msa.fasta))
+    brew(file = brew.template, output = file.path(output.dir, out.html))
 }

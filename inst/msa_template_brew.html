@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <script src="./assets/msa.js"></script>
+    <script src="./assets/biojs_vis_easy_features.min.js"></script>
+  </head>
+  <body>
+    <div id="rootDiv"></div>
+
+    <script>
+      var Feature = biojs.vis.easy_features.model;
+      var gff = msa.io.gff;
+      var fasta = '<%= msa.fasta %>';
+      var seqs =  msa.io.fasta.parse(fasta);
+      var gff3 = '##gff-version 3\n<%= gff3 %>';
+      var gff3Features = gff.parseSeqs(gff3);
+
+      var m = msa({
+        el: rootDiv,
+        seqs: seqs,
+        bootstrapMenu: true,
+        zoomer: { alignmentHeight: 500 },
+        colorscheme: {"scheme": "hydro"},
+        vis: {
+          overviewbox: true,
+          seqlogo: true
+        }
+      });
+
+      m.seqs.addFeatures(gff3Features);
+      m.render();
+    </script>
+  </body>
+</html>

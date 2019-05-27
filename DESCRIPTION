@@ -13,8 +13,8 @@ Depends:
     seqinr (>= 3.4.5),
     optparse (>= 1.6.1),
     GeneFamilies (>= 0.1),
-    msa (>= 1.14.0),
-    data.table (>= 1.12.0)
+    data.table (>= 1.12.0),
+    brew (>= 1.0.6)
 Suggests:
     roxygen2
 RoxygenNote: 6.1.1
