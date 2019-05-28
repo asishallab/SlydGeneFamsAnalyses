@@ -401,41 +401,51 @@ parseHmmer3DomTableOut <- function(path.2.hmmer3.domtbl.out) {
     dom.tbl
 }
 
-hmmer3DomTableOutToPseudoGFF3 <- function(path.2.hmmer3.domtbl.out, 
-    aa.msa, color = "lightblue") {
-    dom.tbl <- parseHmmer3DomTableOut(path.2.hmmer3.domtbl.out)
-    paste(unlist(lapply(1:nrow(dom.tbl), function(i) {
-        d.t.row <- dom.tbl[i, ]
-        gene.id <- d.t.row$query.name
-        dom.start <- alignedForUnalignedAAPos(gene.id, d.t.row$ali.coord.from, 
-            aa.msa)
-        dom.end <- alignedForUnalignedAAPos(gene.id, d.t.row$ali.coord.to, 
-            aa.msa)
-        if (is.na(dom.start) || is.na(dom.end)) 
-            browser()
-        paste(gene.id, ".", "gene", dom.start, dom.end, ".", "+", 
-            ".", paste0("Name=", d.t.row$target.accession, " ", d.t.row$description.of.target, 
-                ";Color=", color))
-    })), collapse = "\\n")
-}
 
-memeBranchesTblToPseudoGFF3 <- function(meme.branches.tbl, color = "lightgreen") {
-    paste(unlist(lapply(1:nrow(meme.branches.tbl), function(i) {
-        m.b.row <- meme.branches.tbl[i, ]
-        paste(m.b.row$Protein, ".", "gene", (m.b.row$aligned.pos.sel.codon - 
-            1), (m.b.row$aligned.pos.sel.codon + 1), ".", "+", ".", 
-            paste0("Name=P;Color=", color))
-    })), collapse = "\\n")
-}
-
+#' Generates an interactive plot of the family's multiple amino acid sequence
+#' alignment. The output is an HTML file which requires this packages's
+#' \code{./inst/assets} folder to be at the same location as the output file. A
+#' modified version of the Javascript library
+#' \code{github.com/AndrewCRMartin/JSAV} is used to display the alignment.
+#' Warning: There are more beatifull ways to interactively show an alignment.
+#'
+#' @param path.2.msa.fasta - The valid file path to the family's multiple amino
+#' acid alignment in fasta format. The filename is also used to extract the
+#' family's name and the name of the output file.
+#' @param meme.branches.tbl - An instance of \code{base::data.frame} holding
+#' the results of HyPhy's MEME analysis (branches). See
+#' \code{SlydGeneFamsAnalyses::readMemeResults} for more details.
+#' @param pfam.hmmer3.domtbl - An instance of \code{base::data.frame} holding
+#' the results of running HMMER3 with the \code{--domtblout} command line
+#' switch. Use \code{SlydGeneFamsAnalyses::parseHmmer3DomTableOut} to read in
+#' the resulting table.
+#' @param output.dir - The directory in which to write the resulting HTML file.
+#' @param brew.template - The brew template to be used to render the HTML file.
+#' Default is
+#' \code{normalizePath(file.path(path.package("SlydGeneFamsAnalyses"),
+#' "msa_template_brew.html"))}.
+#'
+#' @return The result of invoking \code{brew::brew(...)}.
+#' @export
 generateInteractiveMsaPlot <- function(path.2.msa.fasta, meme.branches.tbl, 
     pfam.hmmer3.domtbl, output.dir, brew.template = normalizePath(file.path(path.package("SlydGeneFamsAnalyses"), 
         "msa_template_brew.html"))) {
-    msa.fasta <- paste(readLines(path.2.msa.fasta), collapse = "\\n")
     aa.msa <- read.fasta(path.2.msa.fasta, seqtype = "AA", strip.desc = TRUE, 
         as.string = TRUE)
-    gff3 <- paste(hmmer3DomTableOutToPseudoGFF3(pfam.hmmer3.domtbl, 
-        aa.msa), memeBranchesTblToPseudoGFF3(meme.branches.tbl), sep = "\\n")
-    out.html <- sub("\\.[^.]+", ".html", sub("^.*/", "", path.2.msa.fasta))
+    # Javascript starts counting at 0, not 1:
+    meme.branches.tbl$aligned.pos.sel.codon <- meme.branches.tbl$aligned.pos.sel.codon - 
+        1
+    pfam.hmmer3.domtbl$aligned.ali.coord.from <- c()
+    pfam.hmmer3.domtbl$aligned.ali.coord.to <- c()
+    for (i in 1:nrow(pfam.hmmer3.domtbl)) {
+        gene.id <- pfam.hmmer3.domtbl$query.name[[i]]
+        # Javascript starts counting at 0, not 1:
+        pfam.hmmer3.domtbl$aligned.ali.coord.from[[i]] <- alignedForUnalignedAAPos(gene.id, 
+            pfam.hmmer3.domtbl$ali.coord.from[[i]], aa.msa) - 1
+        pfam.hmmer3.domtbl$aligned.ali.coord.to[[i]] <- alignedForUnalignedAAPos(gene.id, 
+            pfam.hmmer3.domtbl$ali.coord.to[[i]], aa.msa) - 1
+    }
+    fam.name <- sub("\\.[^.]+$", "", sub("^.*/", "", path.2.msa.fasta))
+    out.html <- sub("\\.[^.]+$", ".html", sub("^.*/", "", path.2.msa.fasta))
     brew(file = brew.template, output = file.path(output.dir, out.html))
 }

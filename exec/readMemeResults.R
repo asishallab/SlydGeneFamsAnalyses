@@ -64,9 +64,12 @@ for (fam.nm in names(fams.meme[fams.meme.i])) {
         tryCatch({
             fam.dir <- normalizePath(file.path(script.args$workDir, 
                 fam.nm))
-            fam.aa.msa.fasta <- paste0(fam.nm, "_AA_MSA_orig_gene_ids.fa")
-            printAaMsaWithSelection(fam.dir, fam.aa.msa.fasta, fam.meme.branches.df, 
-                NULL)
+            fam.aa.msa.fasta <- file.path(fam.dir, paste0(fam.nm, 
+                "_AA_MSA_orig_gene_ids.fa"))
+            fam.pfam.results <- parseHmmer3DomTableOut(file.path(fam.dir, 
+                paste0(fam.nm, "_HMMER3_PfamA_domtblout.txt")))
+            generateInteractiveMsaPlot(fam.aa.msa.fasta, fam.meme.branches.df, 
+                fam.pfam.results, fam.dir)
         }, error = function(e) {
             message("An error occurred when plotting MEME results for family '", 
                 fam.nm, "'. Will continue with next family.\n", e)
