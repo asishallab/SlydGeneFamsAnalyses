@@ -6,7 +6,14 @@ option_list = list(make_option(c("-w", "--workDir"), type = "character",
     type = "character", default = detectCores(), help = "The tabular output of running Mercator (MapMan 4) on the proteins of the gene families.", 
     metavar = "character"), make_option(c("-o", "--outDir"), type = "character", 
     default = detectCores(), help = "The path to the directory into which to write the binary results.", 
-    metavar = "character"))
+    metavar = "character"),
+  make_option(
+    c("-c", "--cores"),
+    type = "integer",
+    default = detectCores(),
+    help = "The number of cores to use in parallel. Default is the result of 'detectCores()', i.e. ALL.",
+    metavar = "integer"
+  ))
 
 opt_parser = OptionParser(option_list = option_list)
 script.args = parse_args(opt_parser)
@@ -15,6 +22,10 @@ script.args = parse_args(opt_parser)
 if (is.null(script.args$workDir)) {
     stop("Please specify the required argument '--workDir'.")
 }
+
+# Prepare multi core analysis:
+options(mc.cores = args$cores)
+message("Set mc.cores to ", args$cores)
 
 # Read Mercator (MapMan 4) gene function annotations:
 mm4.tbl <- if (!is.null(script.args$mercatorMapManAnnotations)) {
