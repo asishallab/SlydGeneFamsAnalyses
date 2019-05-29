@@ -16,23 +16,23 @@ members of the argument family 'fam.name'.}
 
 \item{fam.name}{- The name of the family in question.}
 
-\item{pfam.hmmer3.domtbl}{- An instance of \code{base::data.frame}, the
-result of invoking \code{SlydGeneFamsAnalyses::parseHmmer3DomTableOut}.}
+\item{pfam.hmmer3.domtbl}{- An instance of 'base::data.frame', the result of
+invoking 'SlydGeneFamsAnalyses::parseHmmer3DomTableOut'.}
 
-\item{mercator.map.man.4.tbl}{- An instance of \code{base::data.frame}, the
+\item{mercator.map.man.4.tbl}{- An instance of 'base::data.frame', the
 result of reading in Mercator MapMan4 annotatations for at least the genes
-of the argument family. Read with \code{mercator.map.man.4.tbl <-
-read.table( 'path.2.mercator.result.table.txt', header=T, sep="\t",
-quote="'", stringsAsFactors=F )}.}
+of the argument family. Read with 'mercator.map.man.4.tbl <- read.table(
+'path.2.mercator.result.table.txt', header=T, sep='<TAB>', quote=''',
+stringsAsFactors=F )'.}
 
 \item{mm4.excl.bincodes.regex}{- A regular expression to be applied on the
-\code{BINCODE} column of argument 'mercator.map.man.4.tbl' to exclude
-certain MapMan4 BINS from consideration. Note that regular epression is
-expected to be in PERL format. Default is \code{"^(35|50)"}.}
+'BINCODE' column of argument 'mercator.map.man.4.tbl' to exclude certain
+MapMan4 BINS from consideration. Note that regular epression is expected to
+be in PERL format. Default is '^(35|50)'.}
 }
 \value{
-An instance of \code{base::data.frame} with the following columns:
-Family anno.acc anno.desc rel.freq
+An instance of 'base::data.frame' with the following columns: Family
+anno.acc anno.desc rel.freq
 }
 \description{
 For the argument gene family find the most frequent Pfam domains and

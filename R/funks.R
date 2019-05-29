@@ -458,20 +458,20 @@ generateInteractiveMsaPlot <- function(path.2.msa.fasta, meme.branches.tbl,
 #' @param gene.ids - A character vector holding the gene identifiers of the
 #' members of the argument family 'fam.name'.
 #' @param fam.name - The name of the family in question.
-#' @param pfam.hmmer3.domtbl - An instance of \code{base::data.frame}, the
-#' result of invoking \code{SlydGeneFamsAnalyses::parseHmmer3DomTableOut}.
-#' @param mercator.map.man.4.tbl - An instance of \code{base::data.frame}, the
+#' @param pfam.hmmer3.domtbl - An instance of 'base::data.frame', the result of
+#' invoking 'SlydGeneFamsAnalyses::parseHmmer3DomTableOut'.
+#' @param mercator.map.man.4.tbl - An instance of 'base::data.frame', the
 #' result of reading in Mercator MapMan4 annotatations for at least the genes
-#' of the argument family. Read with \code{mercator.map.man.4.tbl <-
-#' read.table( 'path.2.mercator.result.table.txt', header=T, sep="\t",
-#' quote="'", stringsAsFactors=F )}.
+#' of the argument family. Read with 'mercator.map.man.4.tbl <- read.table(
+#' 'path.2.mercator.result.table.txt', header=T, sep='<TAB>', quote=''',
+#' stringsAsFactors=F )'.
 #' @param mm4.excl.bincodes.regex - A regular expression to be applied on the
-#' \code{BINCODE} column of argument 'mercator.map.man.4.tbl' to exclude
-#' certain MapMan4 BINS from consideration. Note that regular epression is
-#' expected to be in PERL format. Default is \code{"^(35|50)"}.
+#' 'BINCODE' column of argument 'mercator.map.man.4.tbl' to exclude certain
+#' MapMan4 BINS from consideration. Note that regular epression is expected to
+#' be in PERL format. Default is '^(35|50)'.
 #'
-#' @return An instance of \code{base::data.frame} with the following columns:
-#' Family anno.acc anno.desc rel.freq
+#' @return An instance of 'base::data.frame' with the following columns: Family
+#' anno.acc anno.desc rel.freq
 #' @export
 annotateGeneFamily <- function(gene.ids, fam.name, pfam.hmmer3.domtbl, 
     mercator.map.man.4.tbl, mm4.excl.bincodes.regex = "^(35|50)") {
@@ -510,4 +510,28 @@ annotateGeneFamily <- function(gene.ids, fam.name, pfam.hmmer3.domtbl,
         data.frame(Family = fam.name, anno.acc = NA, anno.desc = NA, 
             rel.freq = NA, stringsAsFactors = FALSE)
     }
+}
+
+#' Using William Valdar's method of scoring residues a multiple sequence
+#' alignment is assigned a score ranging from 0 for low and 1 for high
+#' conservation. The score is computed as the mean of each columns score, in
+#' turn calculated as Score(column) = (1 -
+#' normalizedShannonEntropy(column.non.gap.residues)) * (1 -
+#' fraction.of.gaps(column)).
+#' See \url{https://www.biostars.org/p/3856/} and
+#' \url{https://doi.org/10.1002/prot.10146}.
+#'
+#' @param msa - The multiple sequence alignment as a character matrix.
+#' @param gap.char - The character representing gaps in the alignment. Default
+#' is \code{'-'}.
+#'
+#' @return A numeric value the mean of the alignment's column scores.
+#' @export
+valdarMultipleAlignmentScore <- function(msa, gap.char = "-") {
+    mean(apply(msa, 2, function(msa.col) {
+        msa.col.gap.frac <- length(which(msa.col == gap.char))/length(msa.col)
+        msa.col.non.gap <- msa.col[which(msa.col != gap.char)]
+        s.e <- GeneFamilies::shannonEntropy(table(msa.col.non.gap))
+        (1 - s.e) * (1 - msa.col.gap.frac)
+    }))
 }
