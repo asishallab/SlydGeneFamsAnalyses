@@ -422,8 +422,8 @@ parseHmmer3DomTableOut <- function(path.2.hmmer3.domtbl.out) {
 #' @param output.dir - The directory in which to write the resulting HTML file.
 #' @param brew.template - The brew template to be used to render the HTML file.
 #' Default is
-#' \code{normalizePath(file.path(path.package("SlydGeneFamsAnalyses"),
-#' "msa_template_brew.html"))}.
+#' \code{normalizePath(file.path(path.package('SlydGeneFamsAnalyses'),
+#' 'msa_template_brew.html'))}.
 #'
 #' @return The result of invoking \code{brew::brew(...)}.
 #' @export
@@ -448,4 +448,66 @@ generateInteractiveMsaPlot <- function(path.2.msa.fasta, meme.branches.tbl,
     fam.name <- sub("\\.[^.]+$", "", sub("^.*/", "", path.2.msa.fasta))
     out.html <- sub("\\.[^.]+$", ".html", sub("^.*/", "", path.2.msa.fasta))
     brew(file = brew.template, output = file.path(output.dir, out.html))
+}
+
+#' For the argument gene family find the most frequent Pfam domains and
+#' mercator MapMan4 results, excluding argument BINCODES. Also report the
+#' relative frequency, i.e. the fraction of genes sharing the respective
+#' annotation.
+#'
+#' @param gene.ids - A character vector holding the gene identifiers of the
+#' members of the argument family 'fam.name'.
+#' @param fam.name - The name of the family in question.
+#' @param pfam.hmmer3.domtbl - An instance of \code{base::data.frame}, the
+#' result of invoking \code{SlydGeneFamsAnalyses::parseHmmer3DomTableOut}.
+#' @param mercator.map.man.4.tbl - An instance of \code{base::data.frame}, the
+#' result of reading in Mercator MapMan4 annotatations for at least the genes
+#' of the argument family. Read with \code{mercator.map.man.4.tbl <-
+#' read.table( 'path.2.mercator.result.table.txt', header=T, sep="\t",
+#' quote="'", stringsAsFactors=F )}.
+#' @param mm4.excl.bincodes.regex - A regular expression to be applied on the
+#' \code{BINCODE} column of argument 'mercator.map.man.4.tbl' to exclude
+#' certain MapMan4 BINS from consideration. Note that regular epression is
+#' expected to be in PERL format. Default is \code{"^(35|50)"}.
+#'
+#' @return An instance of \code{base::data.frame} with the following columns:
+#' Family anno.acc anno.desc rel.freq
+#' @export
+annotateGeneFamily <- function(gene.ids, fam.name, pfam.hmmer3.domtbl, 
+    mercator.map.man.4.tbl, mm4.excl.bincodes.regex = "^(35|50)") {
+    fam.anno.df <- NULL
+    pfam.freqs <- table(unique(pfam.hmmer3.domtbl[which(pfam.hmmer3.domtbl$query.name %in% 
+        gene.ids), c("query.name", "target.accession")])$target.accession)
+    if (length(pfam.freqs) > 0) {
+        pfam.max.freq.acc <- names(pfam.freqs)[which(pfam.freqs == 
+            max(pfam.freqs, na.rm = TRUE))]
+        pfam.max.freq.desc <- unlist(lapply(pfam.max.freq.acc, function(pfam.acc) {
+            pfam.hmmer3.domtbl[which(pfam.hmmer3.domtbl$target.accession == 
+                pfam.acc), "description.of.target"][[1]]
+        }))
+        fam.anno.df <- data.frame(Family = fam.name, anno.acc = pfam.max.freq.acc, 
+            anno.desc = pfam.max.freq.desc, rel.freq = max(pfam.freqs, 
+                na.rm = TRUE)/length(gene.ids), stringsAsFactors = FALSE)
+    }
+    mm4.freqs <- table(mercator.map.man.4.tbl[which(mercator.map.man.4.tbl$IDENTIFIER %in% 
+        tolower(gene.ids) && !grepl(mm4.excl.bincodes.regex, mercator.map.man.4.tbl$BINCODE, 
+        perl = TRUE)), ]$BINCODE)
+    if (length(mm4.freqs) > 0) {
+        mm4.max.freq.acc <- names(mm4.freqs)[which(mm4.freqs == max(mm4.freqs, 
+            na.rm = TRUE))]
+        mm4.max.freq.desc <- unlist(lapply(mm4.max.freq.acc, function(mm4.acc) {
+            mercator.map.man.4.tbl[which(mercator.map.man.4.tbl$BINCODE == 
+                mm4.acc), "NAME"][[1]]
+        }))
+        fam.anno.df <- rbind(fam.anno.df, data.frame(Family = fam.name, 
+            anno.acc = mm4.max.freq.acc, anno.desc = mm4.max.freq.desc, 
+            rel.freq = max(mm4.freqs, na.rm = TRUE)/length(gene.ids), 
+            stringsAsFactors = FALSE))
+    }
+    if (!is.null(fam.anno.df)) {
+        fam.anno.df
+    } else {
+        data.frame(Family = fam.name, anno.acc = NA, anno.desc = NA, 
+            rel.freq = NA, stringsAsFactors = FALSE)
+    }
 }

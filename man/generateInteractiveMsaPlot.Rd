@@ -32,8 +32,8 @@ the resulting table.}
 
 \item{brew.template}{- The brew template to be used to render the HTML file.
 Default is
-\code{normalizePath(file.path(path.package("SlydGeneFamsAnalyses"),
-"msa_template_brew.html"))}.}
+\code{normalizePath(file.path(path.package('SlydGeneFamsAnalyses'),
+'msa_template_brew.html'))}.}
 }
 \value{
 The result of invoking \code{brew::brew(...)}.

@@ -21,6 +21,13 @@ option_list = list(
     default = detectCores(),
     help = "The path to the directory into which to write the binary results.",
     metavar = "character"
+  ),
+  make_option(
+    c("-c", "--cores"),
+    type = "integer",
+    default = detectCores(),
+    help = "The number of cores to use in parallel. Default is the result of 'detectCores()', i.e. ALL.",
+    metavar = "integer"
   )
 )
 
@@ -33,8 +40,8 @@ if (is.null(script.args$workDir)) {
 }
 
 # Prepare multi core analysis:
-options(mc.cores = args$cores)
-message("Set mc.cores to ", args$cores)
+options(mc.cores = script.args$cores)
+message("Set mc.cores to ", script.args$cores)
 
 # Read Mercator (MapMan 4) gene function annotations:
 mm4.tbl <- if (!is.null(script.args$mercatorMapManAnnotations)) {
