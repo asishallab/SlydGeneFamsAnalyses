@@ -538,18 +538,104 @@ valdarMultipleAlignmentScore <- function(msa, gap.char = "-") {
     }))
 }
 
-#' Simple wrapper function to read in MAPP result tables. See 'Stone and
-#' Sidow, A. Physicochemical constraint violation by missense substitutions
-#' mediates impairment of protein function and disease severity. Genome Res 15,
-#' 978–986 (2005)'.
+#' Simple wrapper function to read in MAPP result tables. See 'Stone and Sidow,
+#' A. Physicochemical constraint violation by missense substitutions mediates
+#' impairment of protein function and disease severity. Genome Res 15.
 #'
 #' @param path.2.mapp.result.tbl - The valid file path to the MAPP result
 #' table.
+#' @param fam.name - Optional argument string defining the name of the family
+#' MAPP was executed for. If given the resulting data.frame will have an
+#' additional column 'Family' holding this value. Default is 'NULL'.
 #'
 #' @return An instance of \code{base::data.frame} holding the contents of
 #' argument 'path.2.mapp.result.tbl'.
 #' @export
-readMappResult <- function(path.2.mapp.result.tbl) {
-    read.table(path.2.mapp.result.tbl, sep = "\t", header = TRUE, 
+readMappResult <- function(path.2.mapp.result.tbl, fam.name = NULL) {
+    if (!file.exists(path.2.mapp.result.tbl) || file.info(path.2.mapp.result.tbl)$size == 
+        0) {
+        warning("MAPP result table does not exist or is empty")
+        return(NULL)
+    }
+    mapp.df <- read.table(path.2.mapp.result.tbl, sep = "\t", header = TRUE, 
         stringsAsFactors = FALSE, quote = "", na.string = "N/A")
+    if (!is.null(fam.name)) 
+        mapp.df$Family <- fam.name
+    mapp.df
+}
+
+#' Wrapper function that reads in a multiple sequence alignment and returns it
+#' as a matrix. Leverages \code{seqinr::read.fasta} to read in the the MSA.
+#'
+#' @param path.2.msa - The valid file path to the respective MSA. Must be in
+#' fasta format.
+#' @param seqtype - The argument will directly passed to
+#' \code{seqinr::reaad.fasta}. Default is \code{'AA'}.
+#'
+#' @return A character matrix representing the MSA. Rownames hold the gene
+#' names.
+#' @export
+readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
+    msa.fasta <- read.fasta(path.2.msa, seqtype = seqtype, as.string = TRUE, 
+        strip.desc = TRUE)
+    matrix(unlist(lapply(msa.fasta, strsplit, split = NULL)), byrow = TRUE, 
+        nrow = length(msa.fasta), dimnames = list(names(msa.fasta), 
+            c()))
+}
+
+#' For a given MAPP result table find those argument genes of interest that
+#' have a significantly divergent amino acid at the positions that MAPP
+#' identified as divergent.
+#'
+#' @param mapp.tbl - The result of invoking
+#' \code{SlydGeneFamsAnalyses::readMappResult}.
+#' @param fam.aa.msa - The result of invoking
+#' \code{SlydGeneFamsAnalyses::readMultipleSequenceAlignmentAsMatrix}.
+#' @param genes.of.interest - A character vector of gene identifier. Set to
+#' rownames(fam.aa.msa) if you want to get results for all genes in the
+#' alignment. Default is \code{names(slyd.cds)}.
+#' @param p.adjusted.cutoff - The cutoff for the adjusted P values to infer
+#' significancy. Default is \code{.05}.
+#' @param mapp.aa.p.val.cols - A named character or integer vector identifying
+#' those columns of argument 'mapp.tbl' in which to lookup the respective amino
+#' acid P values. Default is \code{setNames(c('A.1', 'C.1', 'D.1', 'E.1',
+#' 'F.1', 'G.1', 'H.1', 'I.1', 'K.1', 'L.1', 'M.1', 'N.1', 'P.1', 'Q.1', 'R.1',
+#' 'S.1', 'T.1', 'V.1', 'W.1', 'Y.1'), c('A', 'C', 'D', 'E', 'F', 'G', 'H',
+#' 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'))}.
+#'
+#' @return An instance of \code{base::data.frame} with the following columns:
+#' 'Protein', 'Site', 'Divergent.AA', and 'AA.p.value'. Returns NULL if no
+#' matches were found.
+#' @export
+findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, fam.aa.msa, 
+    genes.of.interest = names(slyd.cds), p.adjusted.cutoff = 0.05, 
+    mapp.aa.p.val.cols = setNames(c("A.1", "C.1", "D.1", "E.1", "F.1", 
+        "G.1", "H.1", "I.1", "K.1", "L.1", "M.1", "N.1", "P.1", "Q.1", 
+        "R.1", "S.1", "T.1", "V.1", "W.1", "Y.1"), c("A", "C", "D", 
+        "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", 
+        "S", "T", "V", "W", "Y"))) {
+    fam.aa.msa.interest <- fam.aa.msa[intersect(rownames(fam.aa.msa), 
+        genes.of.interest), ,drop=FALSE ]
+    sign.p.val.i <- which(mapp.tbl$Column.p.adjusted <= p.adjusted.cutoff)
+    if (nrow(fam.aa.msa.interest) > 0 && length(sign.p.val.i) > 0) {
+        res.df <- Reduce(rbind, lapply(sign.p.val.i, function(row.i) {
+            aa.sign <- names(mapp.aa.p.val.cols)[which(mapp.tbl[row.i, 
+                mapp.aa.p.val.cols] <= p.adjusted.cutoff)]
+            pos <- mapp.tbl[[row.i, "Position"]]
+            genes.w.diverg.aa <- which(fam.aa.msa.interest[, pos] %in% 
+                aa.sign)
+            if (length(genes.w.diverg.aa) > 0) {
+                divergent.aas <- fam.aa.msa.interest[genes.w.diverg.aa, 
+                  pos]
+                div.aas.p.vals <- as.numeric(unlist(mapp.tbl[row.i, 
+                  mapp.aa.p.val.cols[divergent.aas]]))
+                data.frame(Protein = rownames(fam.aa.msa.interest)[genes.w.diverg.aa], 
+                  Site = pos, Divergent.AA = divergent.aas, AA.p.value = div.aas.p.vals, 
+                  stringsAsFactors = FALSE)
+            } else NULL
+        }))
+        if (!is.null(res.df)) 
+            rownames(res.df) <- 1:nrow(res.df)
+        res.df
+    }
 }
