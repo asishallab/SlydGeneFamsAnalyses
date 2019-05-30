@@ -1,0 +1,19 @@
+Pfam.accession	Pfam.description
+PF00237.19	Ribosomal protein L22p/L17e
+PF00044.24	Glyceraldehyde 3-phosphate dehydrogenase, NAD binding domain
+PF02969.17	TATA box binding protein associated factor (TAF)
+PF15511.6	Centromere kinetochore component CENP-T histone fold
+PF08268.12	F-box associated domain
+PF00916.20	Sulfate permease family
+PF01061.24	ABC-2 type transporter
+PF03092.16	BT1 family
+PF07690.16	Major Facilitator Superfamily
+PF00560.33	Leucine Rich Repeat
+PF12799.7	Leucine Rich repeats (2 copies)
+PF13516.6	Leucine Rich repeat
+PF13855.6	Leucine rich repeat
+PF05664.11	Plant family of unknown function (DUF810)
+PF13869.6	Nucleotide hydrolase
+PF00311.17	Phosphoenolpyruvate carboxylase
+PF02265.16	S1/P1 Nuclease
+PF00860.20	Permease family

@@ -391,14 +391,16 @@ parseHmmer3DomTableOut <- function(path.2.hmmer3.domtbl.out) {
     dom.tbl <- fread(cmd = paste("sed", "-e '/^#/d'", paste(rep("-e 's/ \\+/\\t/'", 
         22), collapse = " "), path.2.hmmer3.domtbl.out), data.table = FALSE, 
         sep = "\t", header = FALSE)
-    colnames(dom.tbl) <- c("target.name", "target.accession", "tlen", 
-        "query.name", "query.accession", "qlen", "full.sequence.E-value", 
-        "full.sequence.score", "full.sequence.bias", "this.domain.#", 
-        "this.domain.of", "this.domain.c-Evalue", "this.domain.i-Evalue", 
-        "this.domain.score", "this.domain.bias", "hmm.coord.from", 
-        "hmm.coord.to", "ali.coord.from", "ali.coord.to", "env.coord.from", 
-        "env.coord.to", "acc", "description.of.target")
-    dom.tbl
+    if (nrow(dom.tbl) > 0) {
+        colnames(dom.tbl) <- c("target.name", "target.accession", 
+            "tlen", "query.name", "query.accession", "qlen", "full.sequence.E-value", 
+            "full.sequence.score", "full.sequence.bias", "this.domain.#", 
+            "this.domain.of", "this.domain.c-Evalue", "this.domain.i-Evalue", 
+            "this.domain.score", "this.domain.bias", "hmm.coord.from", 
+            "hmm.coord.to", "ali.coord.from", "ali.coord.to", "env.coord.from", 
+            "env.coord.to", "acc", "description.of.target")
+        dom.tbl
+    } else NULL
 }
 
 
@@ -534,4 +536,20 @@ valdarMultipleAlignmentScore <- function(msa, gap.char = "-") {
         s.e <- GeneFamilies::shannonEntropy(table(msa.col.non.gap))
         (1 - s.e) * (1 - msa.col.gap.frac)
     }))
+}
+
+#' Simple wrapper function to read in MAPP result tables. See 'Stone and
+#' Sidow, A. Physicochemical constraint violation by missense substitutions
+#' mediates impairment of protein function and disease severity. Genome Res 15,
+#' 978–986 (2005)'.
+#'
+#' @param path.2.mapp.result.tbl - The valid file path to the MAPP result
+#' table.
+#'
+#' @return An instance of \code{base::data.frame} holding the contents of
+#' argument 'path.2.mapp.result.tbl'.
+#' @export
+readMappResult <- function(path.2.mapp.result.tbl) {
+    read.table(path.2.mapp.result.tbl, sep = "\t", header = TRUE, 
+        stringsAsFactors = FALSE, quote = "", na.string = "N/A")
 }

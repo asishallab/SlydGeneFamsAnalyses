@@ -4,6 +4,7 @@
     data("geneFamilies", package = "SlydGeneFamsAnalyses")
     data("memeResults", package = "SlydGeneFamsAnalyses")
     data("valdarScores", package = "SlydGeneFamsAnalyses")
+    data("domainsAtSelectedSites", package = "SlydGeneFamsAnalyses")
     # Define 'all.cds' constant:
     if (exists("ath.cds") && exists("slyc.cds") && 
         exists("slyd.cds") && exists("spe.cds") && 
