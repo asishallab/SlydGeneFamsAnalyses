@@ -70,13 +70,19 @@ fams.meme.mapp.slyd.sel.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.meme.
             gene.col = "query.name", start.col = "ali.coord.from", 
             end.col = "ali.coord.to", ipr.col = "target.accession")
         if (length(d.f.p) > 0) {
+            pos.sel.site <- fmms.row$Site %in% fams.meme.slyd.genes.df[which(fams.meme.slyd.genes.df$Protein == 
+                fmms.row$Protein), "aligned.pos.sel.codon"]
+            prot.mm4 <- all.prots.mm4[which(all.prots.mm4$IDENTIFIER == tolower(fmms.row$Protein)), ]
+            prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse=",")
+            prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse=",")
             data.frame(Protein = fmms.row$Protein, aligned.divergent.site = fmms.row$Site, 
                 Divergent.AA = fmms.row$Divergent.AA, AA.p.value = fmms.row$AA.p.value, 
-                AA.p.adjusted = fmms.row$AA.p.adjusted, Pfam.accession = d.f.p, 
-                Pfam.description = unlist(lapply(d.f.p, function(x) {
-                  fams.meme.hmmer3.pfam.df[which(fams.meme.hmmer3.pfam.df$target.accession == 
-                    x), "description.of.target"][[1]]
-                })), stringsAsFactors = FALSE)
+                AA.p.adjusted = fmms.row$AA.p.adjusted, is.pos.sel.site = pos.sel.site, 
+                Pfam.accession = d.f.p, Pfam.description = unlist(lapply(d.f.p, 
+                  function(x) {
+                    fams.meme.hmmer3.pfam.df[which(fams.meme.hmmer3.pfam.df$target.accession == 
+                      x), "description.of.target"][[1]]
+                  })), BINCODE=prot.mm4.BINCODES, NAME=prot.mm4.NAMES, stringsAsFactors = FALSE)
         } else NULL
     }))
 

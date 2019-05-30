@@ -1,19 +1,31 @@
-Pfam.accession	Pfam.description
-PF00237.19	Ribosomal protein L22p/L17e
-PF00044.24	Glyceraldehyde 3-phosphate dehydrogenase, NAD binding domain
-PF02969.17	TATA box binding protein associated factor (TAF)
-PF15511.6	Centromere kinetochore component CENP-T histone fold
-PF08268.12	F-box associated domain
-PF00916.20	Sulfate permease family
-PF01061.24	ABC-2 type transporter
-PF03092.16	BT1 family
-PF07690.16	Major Facilitator Superfamily
-PF00560.33	Leucine Rich Repeat
-PF12799.7	Leucine Rich repeats (2 copies)
-PF13516.6	Leucine Rich repeat
-PF13855.6	Leucine rich repeat
-PF05664.11	Plant family of unknown function (DUF810)
-PF13869.6	Nucleotide hydrolase
-PF00311.17	Phosphoenolpyruvate carboxylase
-PF02265.16	S1/P1 Nuclease
-PF00860.20	Permease family
+Protein	aligned.pos.sel.codon	unaligned.pos.sel.codon	MEME.site.p.value	MEME.site.p.adj	Pfam.accession	Pfam.description	BINCODE	NAME
+Solyd03g072520.1	76	4	0.000112315626289994	0.0266188034307285	PF00237.19	Ribosomal protein L22p/L17e	35.2	not assigned.not annotated
+Solyd03g072340.1	59	36	6.69707634380901e-05	0.0267213346117979	PF00044.24	Glyceraldehyde 3-phosphate dehydrogenase, NAD binding domain	35.2	not assigned.not annotated
+Solyd11g066580.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd11g066580.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd04g055550.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd04g055550.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd04g055560.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd04g055560.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd05g071930.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd05g071930.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd06g073040.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd06g073040.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd11g071330.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd11g071330.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd11g071350.1	48	48	0.000195610670614577	0.0201478990733014	PF02969.17	TATA box binding protein associated factor (TAF)	35.2	not assigned.not annotated
+Solyd11g071350.1	48	48	0.000195610670614577	0.0201478990733014	PF15511.6	Centromere kinetochore component CENP-T histone fold	35.2	not assigned.not annotated
+Solyd11g052710.1	241	231	4.70882442882292e-05	0.0202950332882268	PF08268.12	F-box associated domain	35.2	not assigned.not annotated
+Solyd04g071500.1	215	208	9.15529149485561e-05	0.0308533323376634	PF00916.20	Sulfate permease family	35.2	not assigned.not annotated
+Solyd06g066450.1	1280	1222	6.75124674565097e-06	0.00991758146936128	PF01061.24	ABC-2 type transporter	35.2	not assigned.not annotated
+Solyd06g062760.1	127	1	1.44821975605058e-05	0.00837071018997238	PF03092.16	BT1 family	35.2	not assigned.not annotated
+Solyd06g062760.1	127	1	1.44821975605058e-05	0.00837071018997238	PF07690.16	Major Facilitator Superfamily	35.2	not assigned.not annotated
+Solyd02g078590.1	177	162	1.45332563288303e-05	0.0101732794301812	PF00560.33	Leucine Rich Repeat	35.2	not assigned.not annotated
+Solyd02g078590.1	177	162	1.45332563288303e-05	0.0101732794301812	PF12799.7	Leucine Rich repeats (2 copies)	35.2	not assigned.not annotated
+Solyd02g078590.1	177	162	1.45332563288303e-05	0.0101732794301812	PF13516.6	Leucine Rich repeat	35.2	not assigned.not annotated
+Solyd02g078590.1	177	162	1.45332563288303e-05	0.0101732794301812	PF13855.6	Leucine rich repeat	35.2	not assigned.not annotated
+Solyd08g062140.1	504	470	9.37438815196145e-06	0.00986185633586345	PF05664.11	Plant family of unknown function (DUF810)	35.2	not assigned.not annotated
+Solyd01g055250.1	38	38	0.000107586048709862	0.0215172097419725	PF13869.6	Nucleotide hydrolase	35.2	not assigned.not annotated
+Solyd07g071160.1	342	340	3.43342971865779e-05	0.0335446083512866	PF00311.17	Phosphoenolpyruvate carboxylase	35.2	not assigned.not annotated
+Solyd05g054610.1	100	97	3.52107149500513e-05	0.010281528765415	PF02265.16	S1/P1 Nuclease	35.2	not assigned.not annotated
+Solyd06g072130.1	316	220	5.45130335177779e-05	0.0149093146671123	PF00860.20	Permease family	35.2	not assigned.not annotated

@@ -49,13 +49,19 @@ fams.meme.slyd.genes.sel.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.meme
             fams.meme.hmmer3.pfam.df, gene.col = "query.name", start.col = "ali.coord.from", 
             end.col = "ali.coord.to", ipr.col = "target.accession")
         if (length(d.f.p) > 0) {
+            prot.mm4 <- all.prots.mm4[which(all.prots.mm4$IDENTIFIER == 
+                tolower(fmsg.row$Protein)), ]
+            prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse = ",")
+            prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse = ",")
             data.frame(Protein = fmsg.row$Protein, aligned.pos.sel.codon = fmsg.row$aligned.pos.sel.codon, 
                 unaligned.pos.sel.codon = fmsg.row$unaligned.pos.sel.codon, 
+                MEME.site.p.value = fmsg.row$MEME.site.p.value, MEME.site.p.adj = fmsg.row$MEME.site.p.adj, 
                 Pfam.accession = d.f.p, Pfam.description = unlist(lapply(d.f.p, 
                   function(x) {
                     fams.meme.hmmer3.pfam.df[which(fams.meme.hmmer3.pfam.df$target.accession == 
                       x), "description.of.target"][[1]]
-                  })), stringsAsFactors = FALSE)
+                  })), BINCODE = prot.mm4.BINCODES, NAME = prot.mm4.NAMES, 
+                stringsAsFactors = FALSE)
         } else NULL
     }))
 

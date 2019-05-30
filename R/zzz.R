@@ -5,6 +5,8 @@
     data("memeResults", package = "SlydGeneFamsAnalyses")
     data("valdarScores", package = "SlydGeneFamsAnalyses")
     data("domainsAtSelectedSites", package = "SlydGeneFamsAnalyses")
+    data("allProteinsMapMan4Annos", package = "SlydGeneFamsAnalyses")
+    data("mappResults", package = "SlydGeneFamsAnalyses")
     # Define 'all.cds' constant:
     if (exists("ath.cds") && exists("slyc.cds") && 
         exists("slyd.cds") && exists("spe.cds") && 

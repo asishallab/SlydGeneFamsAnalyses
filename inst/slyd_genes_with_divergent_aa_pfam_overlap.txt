@@ -1,0 +1,42 @@
+Protein	aligned.divergent.site	Divergent.AA	AA.p.value	AA.p.adjusted	Pfam.accession	Pfam.description
+Solyd08g064380.1	139	A	0.001175	0.0181238235294118	PF00583.25	Acetyltransferase (GNAT) family
+Solyd08g064390.1	165	Q	0.04617	0.04988	PF00583.25	Acetyltransferase (GNAT) family
+Solyd08g064430.1	173	E	0.008803	0.0181238235294118	PF00583.25	Acetyltransferase (GNAT) family
+Solyd08g064430.1	173	E	0.008803	0.0181238235294118	PF13673.7	Acetyltransferase (GNAT) domain
+Solyd08g064380.1	194	E	0.006301	0.0181238235294118	PF00583.25	Acetyltransferase (GNAT) family
+Solyd08g064380.1	194	E	0.006301	0.0181238235294118	PF13673.7	Acetyltransferase (GNAT) domain
+Solyd12g051750.1	35	A	0.01478	0.0235136363636364	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g051750.1	35	A	0.01478	0.0235136363636364	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g051750.1	35	A	0.01478	0.0235136363636364	PF18551.1	Thaumarchaeal output domain 1
+Solyd12g055410.1	35	A	0.01478	0.0235136363636364	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	53	S	0.01307	0.0228725	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	53	S	0.01307	0.0228725	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	60	T	0.01559	0.0237239130434783	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	60	T	0.01559	0.0237239130434783	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g055410.1	60	T	0.01559	0.0237239130434783	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	60	T	0.01559	0.0237239130434783	PF18551.1	Thaumarchaeal output domain 1
+Solyd12g055410.1	63	Y	0.006686	0.0181238235294118	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	63	Y	0.006686	0.0181238235294118	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g055410.1	63	Y	0.006686	0.0181238235294118	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	63	Y	0.006686	0.0181238235294118	PF18551.1	Thaumarchaeal output domain 1
+Solyd12g055410.1	72	I	0.002942	0.0181238235294118	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	72	I	0.002942	0.0181238235294118	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g055410.1	72	I	0.002942	0.0181238235294118	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	72	I	0.002942	0.0181238235294118	PF18551.1	Thaumarchaeal output domain 1
+Solyd12g051750.1	81	G	0.03448	0.0394596774193548	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g051750.1	81	G	0.03448	0.0394596774193548	PF01975.17	Survival protein SurE
+Solyd12g051750.1	100	A	0.01878	0.0258057692307692	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g051750.1	100	A	0.01878	0.0258057692307692	PF18551.1	Thaumarchaeal output domain 1
+Solyd12g055410.1	100	A	0.01878	0.0258057692307692	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	104	N	0.005662	0.0181238235294118	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	104	N	0.005662	0.0181238235294118	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	115	T	0.004675	0.0181238235294118	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	115	T	0.004675	0.0181238235294118	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g055410.1	115	T	0.004675	0.0181238235294118	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	117	S	0.03327	0.0394596774193548	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	117	S	0.03327	0.0394596774193548	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g055410.1	117	S	0.03327	0.0394596774193548	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	118	T	0.008534	0.0181238235294118	PF00641.18	Zn-finger in Ran binding protein and others
+Solyd12g055410.1	118	T	0.008534	0.0181238235294118	PF12172.8	Rubredoxin-like zinc ribbon domain (DUF35_N)
+Solyd12g055410.1	118	T	0.008534	0.0181238235294118	PF12773.7	Double zinc ribbon
+Solyd12g055410.1	118	T	0.008534	0.0181238235294118	PF18551.1	Thaumarchaeal output domain 1
