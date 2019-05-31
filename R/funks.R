@@ -297,6 +297,7 @@ generateMemeBatchFiles <- function(working.dir, hyphy.batch.files.dir,
 #' family's MEME results are stored.
 #' @param p.adjust.method - The argument passed to \code{base::p.adjust} as the
 #' method to apply for correcting p-values for multiple hypotheses testing.
+#' Default is \code{'BH'}.
 #' @param pval.cutoff - The significance level for corrected p-values. Default
 #' is \code{0.05}.
 #' @param empirical.bayes.factor.cutoff - The significance level to be apliad
@@ -316,7 +317,7 @@ generateMemeBatchFiles <- function(working.dir, hyphy.batch.files.dir,
 #' 'MEME.branches', the respectively found subjects to positive selection
 #' passing the significance levels.
 #' @export
-readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.05, 
+readMemeResults <- function(work.dir, p.adjust.method = "BH", pval.cutoff = 0.05, 
     empirical.bayes.factor.cutoff = 100, phyl.tree.leaf.regex = "^PROT\\d+$", 
     report.original.gene.names = TRUE, gene.family.sizes = gene.families.sizes) {
     norm.wd <- normalizePath(work.dir)
@@ -327,10 +328,16 @@ readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.0
         fams.meme.outs))
     names(fams.meme.outs) <- fam.nms
     names(fams.meme.branches) <- fam.nms
-    setNames(mclapply(fam.nms, function(fam) {
+    fams.meme.df <- do.call(rbind, mclapply(fam.nms, function(fam) {
         m.o <- read.table(fams.meme.outs[[fam]], sep = ",", header = TRUE, 
             stringsAsFactors = FALSE)
-        m.o$p.adj <- p.adjust(m.o$p.value, method = p.adjust.method)
+        m.o$Family <- fam
+        m.o
+    }))
+    fams.meme.df$p.adj <- p.adjust(fams.meme.df$p.value, method = p.adjust.method)
+    
+    setNames(mclapply(fam.nms, function(fam) {
+        m.o <- fams.meme.df[which(fams.meme.df$Family == fam), ]
         m.sites <- which(m.o$p.adj <= pval.cutoff)
         if (length(m.sites) > 0) {
             m.sites.tbl <- data.frame(MEME.site = m.sites, P.val = m.o[m.sites, 
@@ -356,10 +363,10 @@ readMemeResults <- function(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.0
                 m.b.unq <- unique(m.branches$Branch)
                 fam.aa.msa <- read.fasta(fam.aa.msa.file, seqtype = "AA", 
                   as.string = TRUE, strip.desc = TRUE)
-                Reduce(rbind, lapply(m.b.unq, function(meme.branch) {
+                do.call(rbind, lapply(m.b.unq, function(meme.branch) {
                   align.sites <- sort(unique(m.branches[which(m.branches$Branch == 
                     meme.branch), "Site"]))
-                  Reduce(rbind, lapply(align.sites, function(align.site) {
+                  do.call(rbind, lapply(align.sites, function(align.site) {
                     unalign.site <- unalignedAAforAlignedAAPos(meme.branch, 
                       align.site, fam.aa.msa)
                     mst.i <- which(m.sites.tbl$MEME.site == align.site)
@@ -591,6 +598,7 @@ readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
 #' \code{SlydGeneFamsAnalyses::readMappResult}.
 #' @param fam.aa.msa - The result of invoking
 #' \code{SlydGeneFamsAnalyses::readMultipleSequenceAlignmentAsMatrix}.
+#' @param fam.name - The name of the gene family
 #' @param genes.of.interest - A character vector of gene identifier. Set to
 #' rownames(fam.aa.msa) if you want to get results for all genes in the
 #' alignment. Default is \code{names(slyd.cds)}.
@@ -605,11 +613,11 @@ readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
 #' 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'))}.
 #'
 #' @return An instance of \code{base::data.frame} with the following columns:
-#' 'Protein', 'Site', 'Divergent.AA', and 'AA.p.value'. Returns NULL if no
+#' 'Protein', 'Site', 'Divergent.AA', and 'AA.p.value.adj'. Returns NULL if no
 #' matches were found.
 #' @export
 findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, fam.aa.msa, 
-    genes.of.interest = names(slyd.cds), p.adjusted.cutoff = 0.05, 
+    fam.name, genes.of.interest = names(slyd.cds), p.adjusted.cutoff = 0.05, 
     mapp.aa.p.val.cols = setNames(c("A.1.adj", "C.1.adj", "D.1.adj", 
         "E.1.adj", "F.1.adj", "G.1.adj", "H.1.adj", "I.1.adj", "K.1.adj", 
         "L.1.adj", "M.1.adj", "N.1.adj", "P.1.adj", "Q.1.adj", "R.1.adj", 
@@ -618,9 +626,9 @@ findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, fam.aa.msa,
         "Q", "R", "S", "T", "V", "W", "Y"))) {
     fam.aa.msa.interest <- fam.aa.msa[intersect(rownames(fam.aa.msa), 
         genes.of.interest), , drop = FALSE]
-    sign.p.val.i <- which(mapp.tbl$Column.p.adjusted <= p.adjusted.cutoff)
+    sign.p.val.i <- which(mapp.tbl$Column.p.value.adj <= p.adjusted.cutoff)
     if (nrow(fam.aa.msa.interest) > 0 && length(sign.p.val.i) > 0) {
-        res.df <- Reduce(rbind, lapply(sign.p.val.i, function(row.i) {
+        res.df <- do.call(rbind, lapply(sign.p.val.i, function(row.i) {
             aa.sign <- names(mapp.aa.p.val.cols)[which(mapp.tbl[row.i, 
                 mapp.aa.p.val.cols] <= p.adjusted.cutoff)]
             pos <- mapp.tbl[[row.i, "Position"]]
@@ -632,12 +640,14 @@ findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, fam.aa.msa,
                 div.aas.p.vals <- as.numeric(unlist(mapp.tbl[row.i, 
                   mapp.aa.p.val.cols[divergent.aas]]))
                 data.frame(Protein = rownames(fam.aa.msa.interest)[genes.w.diverg.aa], 
-                  Site = pos, Divergent.AA = divergent.aas, AA.p.value = div.aas.p.vals, 
+                  Site = pos, Divergent.AA = divergent.aas, AA.p.value.adj = div.aas.p.vals, 
                   stringsAsFactors = FALSE)
             } else NULL
         }))
-        if (!is.null(res.df)) 
+        if (!is.null(res.df)) {
             rownames(res.df) <- 1:nrow(res.df)
+            res.df$Family <- fam.name
+        }
         res.df
     }
 }

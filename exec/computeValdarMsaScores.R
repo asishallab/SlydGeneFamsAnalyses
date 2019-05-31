@@ -39,7 +39,7 @@ message("Set mc.cores to ", script.args$cores)
 # For all alignments compute the valdar score:
 msa.files <- system(paste("find", script.args$workDir, "-type f", 
     "-name '*_AA_MSA_orig_gene_ids.fa'"), intern = TRUE)
-families.msa.scores.df <- Reduce(rbind, mclapply(msa.files, function(msa.file) {
+families.msa.scores.df <- do.call(rbind, mclapply(msa.files, function(msa.file) {
     fam.name <- sub("^.*/", "", sub("_AA_MSA_orig_gene_ids.fa$", "", msa.file))
     data.frame(Family = fam.name, Valdar.Score = valdarMultipleAlignmentScore(as.matrix(read.alignment(msa.file, 
         format = "fasta"))), stringsAsFactors = FALSE)

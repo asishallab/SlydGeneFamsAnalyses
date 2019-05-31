@@ -45,7 +45,7 @@ fams.meme.i <-
 # Table of Slyd genes that are found to be subject of positive
 # selection:
 fams.meme.slyd.genes.df <-
-  Reduce(rbind, lapply(names(fams.meme[fams.meme.i]),
+  do.call(rbind, lapply(names(fams.meme[fams.meme.i]),
                        function(g.f) {
                          x <- fams.meme[[g.f]]$MEME.branches
                          d.f <- x[which(x$Protein %in% names(slyd.cds)),]

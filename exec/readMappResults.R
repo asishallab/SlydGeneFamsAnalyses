@@ -44,9 +44,10 @@ mapp.result.files <- system(paste("find", script.args$workDir, "-type f",
     "! -size 0", "-name 'OG*_MAPP_out.txt'"), intern = TRUE)
 names(mapp.result.files) <- sub("^.*/", "", sub("_MAPP_out.txt$", 
     "", mapp.result.files))
-fams.mapp.df <- Reduce(rbind, mclapply(names(mapp.result.files), function(fam.name) {
-    readMappResult(mapp.result.files[[fam.name]], fam.name)
-}))
+fams.mapp.df <- do.call(rbind, mclapply(names(mapp.result.files), 
+    function(fam.name) {
+        readMappResult(mapp.result.files[[fam.name]], fam.name)
+    }))
 
 # Adjust P values for multiple hypothesis testing:
 p.value.cols <- c("Column.p.value", "A.1", "C.1", "D.1", "E.1", "F.1", 
@@ -61,22 +62,24 @@ fams.mapp.df <- cbind(fams.mapp.df, matrix(p.adjust(unlist(fams.mapp.df[,
 # sites with significant divergency:
 fams.good.msa.slyd.genes <- intersect(names(slyd.cds), unlist(gene.families[families.msa.scores.df[which(families.msa.scores.df$Valdar.Score >= 
     0.6), "Family"]]))
-fams.mapp.slyd.df <- Reduce(rbind, mclapply(unique(fams.mapp.df$Family), 
+fams.mapp.slyd.df <- do.call(rbind, mclapply(unique(fams.mapp.df$Family), 
     function(fam.name) {
         fam.aa.msa.mtrx <- readMultipleSequenceAlignmentAsMatrix(file.path(script.args$workDir, 
             fam.name, paste0(fam.name, "_AA_MSA_orig_gene_ids.fa")))
         fam.mapp.df <- fams.mapp.df[which(fams.mapp.df$Family == fam.name), 
             ]
         findGenesWithPhysicoChemicalDivergentAA(fam.mapp.df, fam.aa.msa.mtrx, 
-            genes.of.interest = fams.good.msa.slyd.genes)
+            fam.name, genes.of.interest = fams.good.msa.slyd.genes, p.adjusted.cutoff = 0.01)
     }))
 
 # Find Pfam domains overlapping with significantly divergent
 # residues in genes of families with good alignments:
-fams.mapp.slyd.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.mapp.slyd.df), 
+fams.mapp.slyd.pfam.doms.df <- do.call(rbind, mclapply(1:nrow(fams.mapp.slyd.df), 
     function(row.i) {
         fmms.row <- fams.mapp.slyd.df[row.i, ]
-        d.f.p <- domainsForPos(fmms.row$Protein, fmms.row$Site, fams.meme.hmmer3.pfam.df, 
+        fams.hmmer3.pfam.df <- parseHmmer3DomTableOut(file.path(script.args$workDir, 
+            fmms.row$Family, paste0(fmms.row$Family, "_HMMER3_PfamA_domtblout.txt")))
+        d.f.p <- domainsForPos(fmms.row$Protein, fmms.row$Site, fams.hmmer3.pfam.df, 
             gene.col = "query.name", start.col = "ali.coord.from", 
             end.col = "ali.coord.to", ipr.col = "target.accession")
         if (length(d.f.p) > 0) {
@@ -87,13 +90,12 @@ fams.mapp.slyd.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.mapp.slyd.df),
             prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse = ",")
             prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse = ",")
             data.frame(Protein = fmms.row$Protein, aligned.divergent.site = fmms.row$Site, 
-                Divergent.AA = fmms.row$Divergent.AA, AA.p.value = fmms.row$AA.p.value, 
-                AA.p.adjusted = fmms.row$AA.p.adjusted, is.pos.sel.site = pos.sel.site, 
-                Pfam.accession = d.f.p, Pfam.description = unlist(lapply(d.f.p, 
-                  function(x) {
-                    fams.meme.hmmer3.pfam.df[which(fams.meme.hmmer3.pfam.df$target.accession == 
-                      x), "description.of.target"][[1]]
-                  })), BINCODE = prot.mm4.BINCODES, NAME = prot.mm4.NAMES, 
+                Divergent.AA = fmms.row$Divergent.AA, AA.p.value.adj = fmms.row$AA.p.value.adj, 
+                is.pos.sel.site = pos.sel.site, Pfam.accession = d.f.p, 
+                Pfam.description = unlist(lapply(d.f.p, function(x) {
+                  fams.hmmer3.pfam.df[which(fams.hmmer3.pfam.df$target.accession == 
+                    x), "description.of.target"][[1]]
+                })), BINCODE = prot.mm4.BINCODES, NAME = prot.mm4.NAMES, 
                 stringsAsFactors = FALSE)
         } else NULL
     }))

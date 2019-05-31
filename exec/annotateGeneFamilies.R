@@ -51,7 +51,7 @@ mm4.tbl <- if (!is.null(script.args$mercatorMapManAnnotations)) {
 
 # Annotate those Families for which we found evidence of positive
 # selection:
-fams.meme.anno.df <- Reduce(rbind, mclapply(names(fams.meme[fams.meme.i]), 
+fams.meme.anno.df <- do.call(rbind, mclapply(names(fams.meme[fams.meme.i]), 
     function(fam.name) {
         fam.dir <- normalizePath(file.path(script.args$workDir, fam.name))
         fam.gene.ids <- gene.families[[fam.name]]

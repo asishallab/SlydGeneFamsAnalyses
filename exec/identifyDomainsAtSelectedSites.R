@@ -37,12 +37,12 @@ options(mc.cores = script.args$cores)
 message("Set mc.cores to ", script.args$cores)
 
 # Find the families for the pos sel Slyd genes:
-fams.meme.hmmer3.pfam.df <- Reduce(rbind, mclapply(names(fams.meme.i), 
+fams.meme.hmmer3.pfam.df <- do.call(rbind, mclapply(names(fams.meme.i), 
     function(fam.name) {
         parseHmmer3DomTableOut(file.path(script.args$workDir, fam.name, 
             paste0(fam.name, "_HMMER3_PfamA_domtblout.txt")))
     }))
-fams.meme.slyd.genes.sel.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.meme.slyd.genes.df), 
+fams.meme.slyd.genes.sel.pfam.doms.df <- do.call(rbind, mclapply(1:nrow(fams.meme.slyd.genes.df), 
     function(row.i) {
         fmsg.row <- fams.meme.slyd.genes.df[row.i, ]
         d.f.p <- domainsForPos(fmsg.row$Protein, fmsg.row$aligned.pos.sel.codon, 
