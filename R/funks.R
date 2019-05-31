@@ -598,10 +598,11 @@ readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
 #' significancy. Default is \code{.05}.
 #' @param mapp.aa.p.val.cols - A named character or integer vector identifying
 #' those columns of argument 'mapp.tbl' in which to lookup the respective amino
-#' acid P values. Default is \code{setNames(c('A.1', 'C.1', 'D.1', 'E.1',
-#' 'F.1', 'G.1', 'H.1', 'I.1', 'K.1', 'L.1', 'M.1', 'N.1', 'P.1', 'Q.1', 'R.1',
-#' 'S.1', 'T.1', 'V.1', 'W.1', 'Y.1'), c('A', 'C', 'D', 'E', 'F', 'G', 'H',
-#' 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'))}.
+#' acid P values. Default is \code{setNames(c('A.1.adj', 'C.1.adj', 'D.1.adj',
+#' 'E.1.adj', 'F.1.adj', 'G.1.adj', 'H.1.adj', 'I.1.adj', 'K.1.adj', 'L.1.adj',
+#' 'M.1.adj', 'N.1.adj', 'P.1.adj', 'Q.1.adj', 'R.1.adj', 'S.1.adj', 'T.1.adj',
+#' 'V.1.adj', 'W.1.adj', 'Y.1.adj'), c('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+#' 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'))}.
 #'
 #' @return An instance of \code{base::data.frame} with the following columns:
 #' 'Protein', 'Site', 'Divergent.AA', and 'AA.p.value'. Returns NULL if no
@@ -609,13 +610,14 @@ readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
 #' @export
 findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, fam.aa.msa, 
     genes.of.interest = names(slyd.cds), p.adjusted.cutoff = 0.05, 
-    mapp.aa.p.val.cols = setNames(c("A.1", "C.1", "D.1", "E.1", "F.1", 
-        "G.1", "H.1", "I.1", "K.1", "L.1", "M.1", "N.1", "P.1", "Q.1", 
-        "R.1", "S.1", "T.1", "V.1", "W.1", "Y.1"), c("A", "C", "D", 
-        "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", 
-        "S", "T", "V", "W", "Y"))) {
+    mapp.aa.p.val.cols = setNames(c("A.1.adj", "C.1.adj", "D.1.adj", 
+        "E.1.adj", "F.1.adj", "G.1.adj", "H.1.adj", "I.1.adj", "K.1.adj", 
+        "L.1.adj", "M.1.adj", "N.1.adj", "P.1.adj", "Q.1.adj", "R.1.adj", 
+        "S.1.adj", "T.1.adj", "V.1.adj", "W.1.adj", "Y.1.adj"), c("A", 
+        "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", 
+        "Q", "R", "S", "T", "V", "W", "Y"))) {
     fam.aa.msa.interest <- fam.aa.msa[intersect(rownames(fam.aa.msa), 
-        genes.of.interest), ,drop=FALSE ]
+        genes.of.interest), , drop = FALSE]
     sign.p.val.i <- which(mapp.tbl$Column.p.adjusted <= p.adjusted.cutoff)
     if (nrow(fam.aa.msa.interest) > 0 && length(sign.p.val.i) > 0) {
         res.df <- Reduce(rbind, lapply(sign.p.val.i, function(row.i) {

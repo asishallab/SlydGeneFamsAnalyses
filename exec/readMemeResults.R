@@ -9,13 +9,6 @@ option_list = list(
     metavar = "character"
   ),
   make_option(
-    c("-m", "--mercatorMapManAnnotations"),
-    type = "character",
-    default = detectCores(),
-    help = "The tabular output of running Mercator (MapMan 4) on the proteins of the gene families.",
-    metavar = "character"
-  ),
-  make_option(
     c("-o", "--outDir"),
     type = "character",
     default = detectCores(),
@@ -43,18 +36,6 @@ if (is.null(script.args$workDir)) {
 options(mc.cores = script.args$cores)
 message("Set mc.cores to ", script.args$cores)
 
-# Read Mercator (MapMan 4) gene function annotations:
-mm4.tbl <- if (!is.null(script.args$mercatorMapManAnnotations)) {
-  read.table(
-    script.args$mercatorMapManAnnotations,
-    sep = "\t",
-    header = TRUE,
-    quote = "'",
-    stringsAsFactors = FALSE
-  )
-} else
-  NULL
-
 # MEME results as a list of tables. Two per family:
 fams.meme <- readMemeResults(script.args$workDir)
 fams.meme.i <-
@@ -77,19 +58,19 @@ fams.meme.slyd.genes.df <-
 
 # Assign the Mercator MapMan4 gene function annotations to the
 # MEME results:
-if (!is.null(mm4.tbl)) {
+if (!is.null(all.prots.mm4)) {
   fams.meme.slyd.genes.df$BINCODE <- c()
   fams.meme.slyd.genes.df$NAME <- c()
   for (i in 1:nrow(fams.meme.slyd.genes.df)) {
     prot.id <- tolower(fams.meme.slyd.genes.df[[i, "Protein"]])
-    if (prot.id %in% mm4.tbl$IDENTIFIER) {
-      mm4.tbl.prot <- mm4.tbl[which(mm4.tbl$TYPE & mm4.tbl$IDENTIFIER ==
+    if (prot.id %in% all.prots.mm4$IDENTIFIER) {
+      all.prots.mm4.prot <- all.prots.mm4[which(all.prots.mm4$IDENTIFIER ==
                                       prot.id),]
       fams.meme.slyd.genes.df$BINCODE[[i]] <-
-        paste(mm4.tbl.prot$BINCODE,
+        paste(all.prots.mm4.prot$BINCODE,
               collapse = ",")
       fams.meme.slyd.genes.df$NAME[[i]] <-
-        paste(mm4.tbl.prot$NAME,
+        paste(all.prots.mm4.prot$NAME,
               collapse = ",")
     }
   }
