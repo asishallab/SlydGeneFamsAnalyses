@@ -58,8 +58,13 @@ fams.meme.mapp.slyd.df <- Reduce(rbind, mclapply(unique(fams.meme.mapp.df$Family
         findGenesWithPhysicoChemicalDivergentAA(fam.mapp.df, fam.aa.msa.mtrx, 
             genes.of.interest = fams.good.msa.slyd.genes)
     }))
-fams.meme.mapp.slyd.df$AA.p.adjusted <- p.adjust(fams.meme.mapp.slyd.df$AA.p.value, 
-    method = "BH")
+# Adjust P values for multiple hypothesis testing:
+p.value.cols <- c("AA.p.value", "A.1", "C.1", "D.1", "E.1", "F.1", 
+    "G.1", "H.1", "I.1", "K.1", "L.1", "M.1", "N.1", "P.1", "Q.1", 
+    "R.1", "S.1", "T.1", "V.1", "W.1", "Y.1")
+fams.meme.mapp.slyd.df <- cbind(fams.meme.mapp.slyd.df, matrix(p.adjust(fams.meme.mapp.slyd.df[, 
+    p.value.cols], method = "BH"), ncol = length(p.value.cols), dimnames = list(c(), 
+    paste0(p.value.cols, ".adj"))))
 
 # Find Pfam domains overlapping with significantly divergent
 # residues in genes of families with good alignments:
@@ -72,9 +77,10 @@ fams.meme.mapp.slyd.sel.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.meme.
         if (length(d.f.p) > 0) {
             pos.sel.site <- fmms.row$Site %in% fams.meme.slyd.genes.df[which(fams.meme.slyd.genes.df$Protein == 
                 fmms.row$Protein), "aligned.pos.sel.codon"]
-            prot.mm4 <- all.prots.mm4[which(all.prots.mm4$IDENTIFIER == tolower(fmms.row$Protein)), ]
-            prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse=",")
-            prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse=",")
+            prot.mm4 <- all.prots.mm4[which(all.prots.mm4$IDENTIFIER == 
+                tolower(fmms.row$Protein)), ]
+            prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse = ",")
+            prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse = ",")
             data.frame(Protein = fmms.row$Protein, aligned.divergent.site = fmms.row$Site, 
                 Divergent.AA = fmms.row$Divergent.AA, AA.p.value = fmms.row$AA.p.value, 
                 AA.p.adjusted = fmms.row$AA.p.adjusted, is.pos.sel.site = pos.sel.site, 
@@ -82,7 +88,8 @@ fams.meme.mapp.slyd.sel.pfam.doms.df <- Reduce(rbind, mclapply(1:nrow(fams.meme.
                   function(x) {
                     fams.meme.hmmer3.pfam.df[which(fams.meme.hmmer3.pfam.df$target.accession == 
                       x), "description.of.target"][[1]]
-                  })), BINCODE=prot.mm4.BINCODES, NAME=prot.mm4.NAMES, stringsAsFactors = FALSE)
+                  })), BINCODE = prot.mm4.BINCODES, NAME = prot.mm4.NAMES, 
+                stringsAsFactors = FALSE)
         } else NULL
     }))
 
