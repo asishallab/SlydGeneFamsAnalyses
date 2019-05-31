@@ -89,7 +89,7 @@ fams.mapp.slyd.pfam.doms.df <- do.call(rbind, mclapply(1:nrow(fams.mapp.slyd.df)
                 tolower(fmms.row$Protein)), ]
             prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse = ",")
             prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse = ",")
-            data.frame(Protein = fmms.row$Protein, aligned.divergent.site = fmms.row$Site, 
+            data.frame(Protein = fmms.row$Protein, Family=fmms.row$Family, aligned.divergent.site = fmms.row$Site, 
                 Divergent.AA = fmms.row$Divergent.AA, AA.p.value.adj = fmms.row$AA.p.value.adj, 
                 is.pos.sel.site = pos.sel.site, Pfam.accession = d.f.p, 
                 Pfam.description = unlist(lapply(d.f.p, function(x) {

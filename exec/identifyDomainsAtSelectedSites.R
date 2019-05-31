@@ -53,7 +53,8 @@ fams.meme.slyd.genes.sel.pfam.doms.df <- do.call(rbind, mclapply(1:nrow(fams.mem
                 tolower(fmsg.row$Protein)), ]
             prot.mm4.BINCODES <- paste(prot.mm4$BINCODE, collapse = ",")
             prot.mm4.NAMES <- paste(prot.mm4$NAME, collapse = ",")
-            data.frame(Protein = fmsg.row$Protein, aligned.pos.sel.codon = fmsg.row$aligned.pos.sel.codon, 
+            data.frame(Protein = fmsg.row$Protein, Family = fmsg.row$Gene.Family, 
+                aligned.pos.sel.codon = fmsg.row$aligned.pos.sel.codon, 
                 unaligned.pos.sel.codon = fmsg.row$unaligned.pos.sel.codon, 
                 MEME.site.p.value = fmsg.row$MEME.site.p.value, MEME.site.p.adj = fmsg.row$MEME.site.p.adj, 
                 Pfam.accession = d.f.p, Pfam.description = unlist(lapply(d.f.p, 
