@@ -8,7 +8,7 @@ evidence for positive selection are identified. Subsequently leaves of the
 phylogenetic tree (proteins) that show significant evidence for positive
 selection at the identified sites are also identified.}
 \usage{
-readMemeResults(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.05,
+readMemeResults(work.dir, p.adjust.method = "BH", pval.cutoff = 0.05,
   empirical.bayes.factor.cutoff = 100,
   phyl.tree.leaf.regex = "^PROT\\\\d+$",
   report.original.gene.names = TRUE,
@@ -19,7 +19,8 @@ readMemeResults(work.dir, p.adjust.method = "fdr", pval.cutoff = 0.05,
 family's MEME results are stored.}
 
 \item{p.adjust.method}{- The argument passed to \code{base::p.adjust} as the
-method to apply for correcting p-values for multiple hypotheses testing.}
+method to apply for correcting p-values for multiple hypotheses testing.
+Default is \code{'BH'}.}
 
 \item{pval.cutoff}{- The significance level for corrected p-values. Default
 is \code{0.05}.}

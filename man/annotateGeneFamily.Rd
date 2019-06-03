@@ -32,7 +32,7 @@ be in PERL format. Default is '^(35|50)'.}
 }
 \value{
 An instance of 'base::data.frame' with the following columns: Family
-anno.acc anno.desc rel.freq
+size anno.acc anno.desc rel.freq
 }
 \description{
 For the argument gene family find the most frequent Pfam domains and

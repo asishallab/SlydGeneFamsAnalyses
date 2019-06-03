@@ -6,7 +6,7 @@
 have a significantly divergent amino acid at the positions that MAPP
 identified as divergent.}
 \usage{
-findGenesWithPhysicoChemicalDivergentAA(mapp.tbl, fam.aa.msa,
+findGenesWithPhysicoChemicalDivergentAA(mapp.tbl, fam.aa.msa, fam.name,
   genes.of.interest = names(slyd.cds), p.adjusted.cutoff = 0.05,
   mapp.aa.p.val.cols = setNames(c("A.1.adj", "C.1.adj", "D.1.adj",
   "E.1.adj", "F.1.adj", "G.1.adj", "H.1.adj", "I.1.adj", "K.1.adj",
@@ -21,6 +21,8 @@ findGenesWithPhysicoChemicalDivergentAA(mapp.tbl, fam.aa.msa,
 
 \item{fam.aa.msa}{- The result of invoking
 \code{SlydGeneFamsAnalyses::readMultipleSequenceAlignmentAsMatrix}.}
+
+\item{fam.name}{- The name of the gene family}
 
 \item{genes.of.interest}{- A character vector of gene identifier. Set to
 rownames(fam.aa.msa) if you want to get results for all genes in the
@@ -39,7 +41,7 @@ acid P values. Default is \code{setNames(c('A.1.adj', 'C.1.adj', 'D.1.adj',
 }
 \value{
 An instance of \code{base::data.frame} with the following columns:
-'Protein', 'Site', 'Divergent.AA', and 'AA.p.value'. Returns NULL if no
+'Protein', 'Site', 'Divergent.AA', and 'AA.p.value.adj'. Returns NULL if no
 matches were found.
 }
 \description{
