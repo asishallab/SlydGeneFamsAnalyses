@@ -7,8 +7,8 @@ argument gene family highlighting the genes and amino acids found to be
 subject to positive selection.}
 \usage{
 printAaMsaWithSelection(fam.dir, aa.msa.file, selected.pos.and.genes.tbl,
-  plot.pdf.prefix, max.width = 300, before.sel.pos.offset = 5,
-  after.sel.pos.offset = 5)
+  pfam.tbl, plot.pdf.prefix = sub(".fa", "", aa.msa.file, fixed = TRUE),
+  before.sel.pos.offset = 5, after.sel.pos.offset = 5)
 }
 \arguments{
 \item{aa.msa.file}{- The name, not path, of the multiple sequence alignment
@@ -22,12 +22,15 @@ positions and their corresponding unaligned positions. See function
 \code{SlydGeneFamsAnalyses::readMemeResults} for details on how this table
 can be generated.}
 
-\item{plot.pdf.prefix}{- The file name without file extension ('.pdf') of
-the plot(s) that will be generated and saved in the argument 'fam.dir'.}
+\item{pfam.tbl}{- An instance of \code{base::data.frame} the result from
+invoking \code{SlydGeneFamsAnalyses::parseHmmer3DomTableOut}. If NULL this
+will be ignored. If set and some protein domains fall within the displayed
+region of the MSA the domains will be tinted. See CTAN texshade
+documentation for more details.}
 
-\item{max.width}{- The maximum number of aligned amino acid positions to
-include in a single plot. If the selected positions exceed this range
-several plots will be created.}
+\item{plot.pdf.prefix}{- The file name with file extension ('.pdf') of the
+plot that will be generated and saved in the argument 'fam.dir'. Default is
+\code{sub('.fa', '', aa.msa.file, fixed=TRUE)}.}
 
 \item{before.sel.pos.offset}{- The offset before the first selected position
 to be included in the plot. Default is \code{5}.}
@@ -40,7 +43,7 @@ family. This dir should contain the multiple sequence alignment file and
 will be used to write the alignment plots into.}
 }
 \value{
-TRUE if and only if no error occurs
+The result of invoking \code{msa::msaPrettyPrint(...)}.
 }
 \description{
 Uses Bioconductor's 'msa' package to pretty print the alignment of the

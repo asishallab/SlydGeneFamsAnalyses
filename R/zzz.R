@@ -2,6 +2,11 @@
     pkgname = "SlydGeneFamsAnalyses") {
     data("all_CDS", package = "SlydGeneFamsAnalyses")
     data("geneFamilies", package = "SlydGeneFamsAnalyses")
+    data("memeResults", package = "SlydGeneFamsAnalyses")
+    data("valdarScores", package = "SlydGeneFamsAnalyses")
+    data("domainsAtSelectedSites", package = "SlydGeneFamsAnalyses")
+    data("allProteinsMapMan4Annos", package = "SlydGeneFamsAnalyses")
+    data("mappResults", package = "SlydGeneFamsAnalyses")
     # Define 'all.cds' constant:
     if (exists("cag.cds") && exists("cam.cds") &&
         exists("date.cds") && exists("dati.cds") &&

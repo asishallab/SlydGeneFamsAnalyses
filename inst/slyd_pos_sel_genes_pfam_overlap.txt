@@ -1,0 +1,6 @@
+Protein	Family	aligned.pos.sel.codon	unaligned.pos.sel.codon	MEME.site.p.value	MEME.site.p.adj	Pfam.accession	Pfam.description	BINCODE	NAME
+Solyd06g078390.1	OG0001404	63	23	4.28382773920433e-07	0.0405103944006104	PF00450.22	Serine carboxypeptidase	35.2	not assigned.not annotated
+Solyd06g078390.1	OG0001404	63	23	4.28382773920433e-07	0.0405103944006104	PF10340.9	Steryl acetyl hydrolase	35.2	not assigned.not annotated
+Solyd04g054060.1	OG0000011	1110	731	2.0448799276096e-07	0.0280061607429041	PF00931.22	NB-ARC domain	35.2	not assigned.not annotated
+Solyd04g054060.1	OG0000011	1112	733	9.07570973929239e-08	0.0160207130862667	PF00931.22	NB-ARC domain	35.2	not assigned.not annotated
+Solyd12g066030.1	OG0000232	49	4	1.95331406271926e-07	0.0276167471573532	PF02990.16	Endomembrane protein 70	35.2	not assigned.not annotated

@@ -1,0 +1,134 @@
+<DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= fam.name -%></title>
+
+    <!-- JQuery and JQuery-UI -->
+    <link href="assets/jquery.css" rel="stylesheet" />
+    <script type='text/javascript' src='assets/jquery-1.10.2.min.js'></script>
+    <script type='text/javascript' src='assets/jquery-ui-1.10.4.custom.min.js'></script>
+
+    <!-- Selectize.js -->
+    <script type="text/javascript" src="assets/selectize.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/selectize.bootstrap3.css" />
+
+    <!-- JSAV -->
+    <link href="assets/JSAV.css" rel="stylesheet" />
+    <script type='text/javascript' src='assets/JSAV.js'></script>
+
+    <style>
+      p, label {font: 12pt Arial,Helvetica,sans-serif;
+        color: #3333AA;
+      }
+    </style>
+
+    <!-- If using tooltipster -->
+    <link href="assets/tooltipster.css" rel="stylesheet" />
+    <script type='text/javascript' src='assets/jquery.tooltipster.min.js'></script>
+    <script>
+      function enableTooltipster()
+        {
+          $(document).ready(function() {
+            $('.tooltip').tooltipster();
+          });
+        }
+      enableTooltipster();
+    </script>
+    <!-- END -->
+
+    <script type='text/javascript'>
+      $(window).load(function() {
+        $('#featuresSelector').selectize({
+          create: true,
+          sortField: 'text',
+          closeAfterSelect: true,
+          onItemAdd: function(value, itm) {
+            $('#' + value).toggle()
+          },
+          onItemRemove: function(value) {
+            $('#' + value).toggle()
+          }
+        })
+      })
+    </script>
+  </head>
+
+  <body>
+    <script type='text/javascript'>
+      var MySeqs = [];
+
+      <% for ( seq.id in names(aa.msa) ) { -%>
+          MySeqs.push({ id :"<%= seq.id %>", sequence :"<%= aa.msa[[seq.id]] %>"});
+      <% } -%>
+
+      var MyFeatures = [];
+
+      <% feat.i <- 1 %>
+      <% feature.options <- unlist(lapply( unique(meme.branches.tbl$Protein), function(prot.id) { -%>
+          <% prot.sel.sites <- sort(meme.branches.tbl[which(meme.branches.tbl$Protein == prot.id), "aligned.pos.sel.codon"]) %>
+          <% prot.sel.sites.highlight <- paste(unlist(lapply(prot.sel.sites, function(x) paste(x,x,sep=","))), collapse=",") %>
+          <% option.str <- paste( prot.id, "MEME pos sel sites" ) %>
+          MyFeatures.push({ id: '<%= paste0("feature_", feat.i) -%>', name: '<%= option.str -%>', highlight: [<%= prot.sel.sites.highlight %>]});
+          <% feat.i <<- feat.i + 1 %>
+      <% option.str; })) -%>
+      <% feature.options <- append(feature.options, unlist(lapply( 1:nrow(pfam.hmmer3.domtbl), function(row.i) { -%>
+          <% phd.row.i <- pfam.hmmer3.domtbl[row.i,] %>
+          <% option.str <- paste( phd.row.i$query.name, phd.row.i$target.accession, phd.row.i$description.of.target, "(", phd.row.i$`this.domain.#`, "/", phd.row.i$this.domain.of, ")") %>
+          MyFeatures.push({ id: '<%= paste0("feature_", feat.i) -%>', name: '<%= option.str -%>', highlight: [<%= paste( phd.row.i$aligned.ali.coord.from, phd.row.i$aligned.ali.coord.to, sep="," ) %>]});
+          <% feat.i <<- feat.i + 1 %>
+      <% option.str; }))) -%>
+      <% names(feature.options) <- paste0( "feature_", 1:length(feature.options) ) %>
+    </script>
+
+    <script type='text/javascript'>
+      function myAction(divId, sequences)
+{
+  var seqString = "";
+  for(var i=0; i<sequences.length; i++)
+  {
+    seqString += ">" + sequences[i].id + "\n";
+    seqString += sequences[i].sequence + "\n";
+  }
+  alert(seqString);
+}
+
+var MyOptions = Array();
+MyOptions.sortable = true;
+MyOptions.selectable = true;
+MyOptions.deletable = true;
+MyOptions.border = false;
+MyOptions.highlight = [<%= paste(unlist(lapply(sort(unique(meme.branches.tbl$aligned.pos.sel.codon)), function(x) paste(x,x,sep=","))), collapse=",") %>];
+MyOptions.highlightName = 'Selected Sites';
+MyOptions.features = MyFeatures;
+MyOptions.submit = "http://www.bioinf.org.uk/cgi-bin/echo.pl";
+MyOptions.submitLabel = "Submit";
+MyOptions.action = "myAction";
+MyOptions.actionLabel = "Process";
+MyOptions.toggleDotify = true;
+MyOptions.toggleDotifyLabel = "Dotify";
+MyOptions.toggleNocolour = true;
+MyOptions.toggleNocolourLabel = "Nocolour";
+MyOptions.fasta = true;
+MyOptions.fastaLabel = "Export";
+MyOptions.consensus = true;
+MyOptions.colourScheme = "zappo";
+MyOptions.selectColour = true;
+MyOptions.callback = "enableTooltipster";
+MyOptions.colourChoices = ["Taylor", "Clustal", "Zappo", "HPhob"];
+MyOptions.idSubmit = "http://www.bioinf.org.uk/cgi-bin/echo.pl?seq=";
+MyOptions.idSubmitClean = true;
+
+printJSAV('sequenceDisplay', MySeqs, MyOptions);
+    </script>
+
+    <p>
+    <label for="featuresSelector">Select sequence features to display</label>
+    <select id="featuresSelector" multiple="true" style = "width: 35%">
+      <% for (feat.val in names(feature.options)) { %>
+        <option value="<%= feat.val -%>"><%= feature.options[[feat.val]] %></option>
+      <% } %>
+    </select>
+    </p>
+
+  </body>
+</html>

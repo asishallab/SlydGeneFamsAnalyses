@@ -8,11 +8,13 @@ Maintainer: Dr. Asis Hallab <a.hallab@fz-juelich.de>
 Description: Phylogeny based detection of positive selection in gene families using HypHy. See https://github.com/asishallab/GeneFamilies in order to obtain the dependency 'GeneFamilies'.
 License: GPL-3
 Depends:
-    R (>= 3.5.1),
-    parallel (>= 3.5.1),
+    R (>= 3.5.0),
+    parallel (>= 3.5.0),
     seqinr (>= 3.4.5),
     optparse (>= 1.6.1),
     GeneFamilies (>= 0.1),
+    data.table (>= 1.12.0),
+    brew (>= 1.0.6),
     msa (>= 1.14.0)
 Suggests:
     roxygen2

@@ -1,0 +1,95 @@
+Protein	Family	aligned.divergent.site	Divergent.AA	AA.p.value.adj	is.pos.sel.site	Pfam.accession	Pfam.description	BINCODE	NAME
+Solyd02g081530.1	OG0014216	96	A	0.00334832731310792	FALSE	PF08029.11	HisG, C-terminal domain	35.2	not assigned.not annotated
+Solyd02g081530.1	OG0014216	96	A	0.00334832731310792	FALSE	PF11272.8	Protein of unknown function (DUF3072)	35.2	not assigned.not annotated
+Solyd03g063770.1	OG0014323	61	M	0.00777560785130828	FALSE	PF01784.18	NIF3 (NGG1p interacting factor 3)	35.2	not assigned.not annotated
+Solyd03g063770.1	OG0014323	61	M	0.00777560785130828	FALSE	PF07279.11	Protein of unknown function (DUF1442)	35.2	not assigned.not annotated
+Solyd03g063770.1	OG0014323	61	M	0.00777560785130828	FALSE	PF13090.6	Polyphosphate kinase C-terminal domain 2	35.2	not assigned.not annotated
+Solyd03g063770.1	OG0014323	61	M	0.00777560785130828	FALSE	PF13604.6	AAA domain	35.2	not assigned.not annotated
+Solyd02g070700.1	OG0008117	149	T	0.00540889558128184	FALSE	PF02225.22	PA domain	35.2	not assigned.not annotated
+Solyd02g070760.1	OG0008117	149	T	0.00540889558128184	FALSE	PF02225.22	PA domain	35.2	not assigned.not annotated
+Solyd05g058600.1	OG0003574	731	I	0.00453249999396459	FALSE	PF13905.6	Thioredoxin-like	35.2	not assigned.not annotated
+Solyd05g058600.1	OG0003574	731	I	0.00453249999396459	FALSE	PF14577.6	Sieve element occlusion C-terminus	35.2	not assigned.not annotated
+Solyd04g063780.1	OG0011567	36	S	0.00496907479001355	FALSE	PF08263.12	Leucine rich repeat N-terminal domain	35.2	not assigned.not annotated
+Solyd04g063780.1	OG0011567	36	S	0.00496907479001355	FALSE	PF13855.6	Leucine rich repeat	35.2	not assigned.not annotated
+Solyd06g059530.1	OG0003684	82	S	0.00167373823446066	FALSE	PF02777.18	Iron/manganese superoxide dismutases, C-terminal domain	35.2	not assigned.not annotated
+Solyd06g059530.1	OG0003684	93	E	0.00535402997007062	FALSE	PF02777.18	Iron/manganese superoxide dismutases, C-terminal domain	35.2	not assigned.not annotated
+Solyd09g055630.1	OG0015295	93	A	0.00313137604991022	FALSE	PF04759.13	Protein of unknown function, DUF617	35.2	not assigned.not annotated
+Solyd09g055630.1	OG0015295	93	A	0.00313137604991022	FALSE	PF16063.5	Domain of unknown function (DUF4805)	35.2	not assigned.not annotated
+Solyd03g054080.1	OG0016477	32	S	0.00877100022766502	FALSE	PF06708.11	Protein of unknown function (DUF1195)	35.2	not assigned.not annotated
+Solyd11g052540.1	OG0001002	292	L	0.000862706071717163	FALSE	PF00201.18	UDP-glucoronosyl and UDP-glucosyl transferase	35.2	not assigned.not annotated
+Solyd01g069530.1	OG0010403	52	A	0.000904038712618595	FALSE	PF14543.6	Xylanase inhibitor N-terminal	35.2	not assigned.not annotated
+Solyd08g054540.1	OG0012544	517	I	0.00923992048118041	FALSE	PF01535.20	PPR repeat	35.2	not assigned.not annotated
+Solyd08g054540.1	OG0012544	517	I	0.00923992048118041	FALSE	PF13041.6	PPR repeat family	35.2	not assigned.not annotated
+Solyd08g054540.1	OG0012544	517	I	0.00923992048118041	FALSE	PF13812.6	Pentatricopeptide repeat domain	35.2	not assigned.not annotated
+Solyd08g054540.1	OG0012544	517	I	0.00923992048118041	FALSE	PF14559.6	Tetratricopeptide repeat	35.2	not assigned.not annotated
+Solyd08g054540.1	OG0012544	517	I	0.00923992048118041	FALSE	PF17177.4	Pentacotripeptide-repeat region of PRORP	35.2	not assigned.not annotated
+Solyd09g067380.1	OG0015360	261	T	0.000870075407474463	FALSE	PF01167.18	Tub family	35.2	not assigned.not annotated
+Solyd03g073430.1	OG0014373	270	A	0.00100080265858365	FALSE	PF01535.20	PPR repeat	35.2	not assigned.not annotated
+Solyd03g073430.1	OG0014373	270	A	0.00100080265858365	FALSE	PF12854.7	PPR repeat	35.2	not assigned.not annotated
+Solyd03g073430.1	OG0014373	270	A	0.00100080265858365	FALSE	PF13041.6	PPR repeat family	35.2	not assigned.not annotated
+Solyd03g073430.1	OG0014373	270	A	0.00100080265858365	FALSE	PF13812.6	Pentatricopeptide repeat domain	35.2	not assigned.not annotated
+Solyd03g073430.1	OG0014373	270	A	0.00100080265858365	FALSE	PF17177.4	Pentacotripeptide-repeat region of PRORP	35.2	not assigned.not annotated
+Solyd05g068630.1	OG0006775	114	T	0.00938482153136565	FALSE	PF01019.21	Gamma-glutamyltranspeptidase	35.2	not assigned.not annotated
+Solyd05g068630.1	OG0006775	196	I	0.00324096950062789	FALSE	PF01019.21	Gamma-glutamyltranspeptidase	35.2	not assigned.not annotated
+Solyd05g068590.1	OG0006775	272	K	0.00592838393755947	FALSE	PF01019.21	Gamma-glutamyltranspeptidase	35.2	not assigned.not annotated
+Solyd11g063760.1	OG0015591	740	T	0.00920135042797589	FALSE	PF14310.6	Fibronectin type III-like domain	35.2	not assigned.not annotated
+Solyd01g080510.1	OG0013913	72	V	0.00584746514655412	FALSE	PF01627.23	Hpt domain	35.2	not assigned.not annotated
+Solyd01g080510.1	OG0013913	72	V	0.00584746514655412	FALSE	PF02181.23	Formin Homology 2 Domain	35.2	not assigned.not annotated
+Solyd01g080510.1	OG0013913	72	V	0.00584746514655412	FALSE	PF10368.9	Putative cell-wall binding lipoprotein	35.2	not assigned.not annotated
+Solyd01g080510.1	OG0013913	72	V	0.00584746514655412	FALSE	PF13291.6	ACT domain	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	91	E	0.00182769079979526	FALSE	PF02496.16	ABA/WDS induced protein	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	91	E	0.00182769079979526	FALSE	PF12868.7	Domain of unknwon function (DUF3824)	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	95	C	0.000538521809514601	FALSE	PF02496.16	ABA/WDS induced protein	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	95	C	0.000538521809514601	FALSE	PF12868.7	Domain of unknwon function (DUF3824)	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	96	Q	0.00611527493870087	FALSE	PF02496.16	ABA/WDS induced protein	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	96	Q	0.00611527493870087	FALSE	PF12868.7	Domain of unknwon function (DUF3824)	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	97	E	0.0021737026416953	FALSE	PF02496.16	ABA/WDS induced protein	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	97	E	0.0021737026416953	FALSE	PF12868.7	Domain of unknwon function (DUF3824)	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	98	R	0.00145266080280624	FALSE	PF02496.16	ABA/WDS induced protein	35.2	not assigned.not annotated
+Solyd04g069770.1	OG0011630	98	R	0.00145266080280624	FALSE	PF12868.7	Domain of unknwon function (DUF3824)	35.2	not assigned.not annotated
+Solyd12g066840.1	OG0007450	193	A	0.00933777366992315	FALSE	PF02383.18	SacI homology domain	35.2	not assigned.not annotated
+Solyd06g073850.1	OG0014903	293	A	0.00188330700724917	FALSE	PF01546.28	Peptidase family M20/M25/M40	35.2	not assigned.not annotated
+Solyd06g073850.1	OG0014903	293	A	0.00188330700724917	FALSE	PF07687.14	Peptidase dimerisation domain	35.2	not assigned.not annotated
+Solyd06g073850.1	OG0014903	293	A	0.00188330700724917	FALSE	PF09536.10	Protein of unknown function (DUF2378)	35.2	not assigned.not annotated
+Solyd03g054950.1	OG0003429	354	L	0.00576806747139627	FALSE	PF01063.19	Amino-transferase class IV	35.2	not assigned.not annotated
+Solyd08g065920.1	OG0015187	94	A	0.00983509737891525	FALSE	PF03283.13	Pectinacetylesterase	35.2	not assigned.not annotated
+Solyd08g065940.1	OG0015187	94	A	0.00983509737891525	FALSE	PF03283.13	Pectinacetylesterase	35.2	not assigned.not annotated
+Solyd06g077010.1	OG0012209	146	A	0.0076163671702139	FALSE	PF16053.5	Mitochondrial 28S ribosomal protein S34	35.2	not assigned.not annotated
+Solyd10g066620.1	OG0003926	12	R	0.000719485723746124	FALSE	PF04832.12	SOUL heme-binding protein	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF01535.20	PPR repeat	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF10602.9	26S proteasome subunit RPN7	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF12854.7	PPR repeat	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF13041.6	PPR repeat family	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF13428.6	Tetratricopeptide repeat	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF13812.6	Pentatricopeptide repeat domain	35.2	not assigned.not annotated
+Solyd05g057080.1	OG0011873	592	A	0.00861839304028939	FALSE	PF17177.4	Pentacotripeptide-repeat region of PRORP	35.2	not assigned.not annotated
+Solyd10g052490.1	OG0001420	677	V	0.00761883676450781	FALSE	PF01073.19	3-beta hydroxysteroid dehydrogenase/isomerase family	35.2	not assigned.not annotated
+Solyd10g052490.1	OG0001420	677	V	0.00761883676450781	FALSE	PF01370.21	NAD dependent epimerase/dehydratase family	35.2	not assigned.not annotated
+Solyd10g052490.1	OG0001420	677	V	0.00761883676450781	FALSE	PF04321.17	RmlD substrate binding domain	35.2	not assigned.not annotated
+Solyd10g052490.1	OG0001420	677	V	0.00761883676450781	FALSE	PF07993.12	Male sterility protein	35.2	not assigned.not annotated
+Solyd10g052490.1	OG0001420	677	V	0.00761883676450781	FALSE	PF16363.5	GDP-mannose 4,6 dehydratase	35.2	not assigned.not annotated
+Solyd10g066840.1	OG0013177	128	E	0.00830872143016669	FALSE	PF00657.22	GDSL-like Lipase/Acylhydrolase	35.2	not assigned.not annotated
+Solyd10g066840.1	OG0013177	128	E	0.00830872143016669	FALSE	PF13472.6	GDSL-like Lipase/Acylhydrolase family	35.2	not assigned.not annotated
+Solyd02g060530.1	OG0004505	101	C	0.00205678761694804	FALSE	PF01554.18	MatE	35.2	not assigned.not annotated
+Solyd02g060530.1	OG0004505	105	Y	0.00401747198196586	FALSE	PF01554.18	MatE	35.2	not assigned.not annotated
+Solyd06g074450.1	OG0012187	364	S	0.00731646091574819	FALSE	PF02984.19	Cyclin, C-terminal domain	35.2	not assigned.not annotated
+Solyd10g069810.1	OG0009854	97	C	0.00142837195159831	FALSE	PF03463.15	eRF1 domain 1	35.2	not assigned.not annotated
+Solyd07g051750.1	OG0009144	50	V	0.0053527829013378	FALSE	PF00643.24	B-box zinc finger	35.2	not assigned.not annotated
+Solyd07g051750.1	OG0009144	65	D	0.00909872502819737	FALSE	PF00643.24	B-box zinc finger	35.2	not assigned.not annotated
+Solyd07g051750.1	OG0009144	66	R	0.00616100787299334	FALSE	PF00643.24	B-box zinc finger	35.2	not assigned.not annotated
+Solyd07g051760.1	OG0009144	82	A	0.00450336917185759	FALSE	PF00643.24	B-box zinc finger	35.2	not assigned.not annotated
+Solyd07g051760.1	OG0009144	82	A	0.00450336917185759	FALSE	PF06221.13	Putative zinc finger motif, C2HC5-type	35.2	not assigned.not annotated
+Solyd07g051760.1	OG0009144	82	A	0.00450336917185759	FALSE	PF10080.9	Predicted membrane protein (DUF2318)	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF00637.20	Region in Clathrin and VPS	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF01535.20	PPR repeat	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF08579.11	Mitochondrial ribonuclease P subunit (RPM2)	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF10037.9	Mitochondrial 28S ribosomal protein S27	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF12854.7	PPR repeat	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF12921.7	Mitochondrial ATPase expression	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF13041.6	PPR repeat family	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF13428.6	Tetratricopeptide repeat	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF13812.6	Pentatricopeptide repeat domain	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF14559.6	Tetratricopeptide repeat	35.2	not assigned.not annotated
+Solyd07g063280.1	OG0009230	217	V	0.00995403257072045	FALSE	PF17177.4	Pentacotripeptide-repeat region of PRORP	35.2	not assigned.not annotated
+Solyd01g082730.1	OG0013931	300	V	0.00292405995991669	FALSE	PF00892.20	EamA-like transporter family	35.2	not assigned.not annotated
+Solyd01g082730.1	OG0013931	300	V	0.00292405995991669	FALSE	PF11381.8	Protein of unknown function (DUF3185)	35.2	not assigned.not annotated
