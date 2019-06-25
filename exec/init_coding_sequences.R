@@ -22,18 +22,32 @@ args = parse_args(opt_parser)
 
 if (is.null(args$inputdir) || is.null(args$outdir)) stop("Please specify the required arguments")
 
-ath.cds <- read.fasta(file.path(args$inputdir, "TAIR10_cds_20110103_representative_gene_model_updated"), 
+cag.cds <- read.fasta(file.path(args$inputdir, "Capsicumannuumglabriusculum.fasta"),
     as.string = TRUE, strip.desc = TRUE, seqtype = "DNA")
-vvi.cds <- read.fasta(file.path(args$inputdir, "Vitis_vinifera_mRNA.fa"), 
+cam.cds <- read.fasta(file.path(args$inputdir, "Capsicumannuummorelia.fasta"),
     strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
-slyd.cds <- read.fasta(file.path(args$inputdir, "SlydLA2951_v0.6_cds_all.fasta"), 
+date.cds <- read.fasta(file.path(args$inputdir, "DaturastramoniumTeo1.fasta"),
     strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
-stu.cds <- read.fasta(file.path(args$inputdir, "Solanum_tuberosum_v3.4_cds_matching_peptides.fa"), 
+dati.cds <- read.fasta(file.path(args$inputdir, "DaturastramoniumTic23.fasta"),
     strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
-slyc.cds <- read.fasta(file.path(args$inputdir, "ITAG3.2_CDS.fasta"), 
+nat.cds <- read.fasta(file.path(args$inputdir, "Nicotianaattenuata.fasta"),
     strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
-spe.cds <- read.fasta(file.path(args$inputdir, "Spenn-v2-cds-annot.fa"), 
+nsy.cds <- read.fasta(file.path(args$inputdir, "Nicotianasylvestris.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+nta.cds <- read.fasta(file.path(args$inputdir, "Nicotianatabacum.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+nto.cds <- read.fasta(file.path(args$inputdir, "Nicotianatomentosiformis.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+pi.cds <- read.fasta(file.path(args$inputdir, "Petuniainflata.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+sly.cds <- read.fasta(file.path(args$inputdir, "Solanumlycopersicum.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+spe.cds <- read.fasta(file.path(args$inputdir, "Solanumpennellii.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+spi.cds <- read.fasta(file.path(args$inputdir, "Solanumpimpinellifolium.fasta"),
+    strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
+stu.cds <- read.fasta(file.path(args$inputdir, "Solanumtuberosum.fasta"),
     strip.desc = TRUE, as.string = TRUE, seqtype = "DNA")
 
-save(ath.cds, slyc.cds, slyd.cds, spe.cds, stu.cds, 
-    vvi.cds, file = file.path(args$outdir, "all_CDS.RData"))
+save(cag.cds, cam.cds, date.cds, dati.cds, nat.cds, nsy.cds, nta.cds, nto.cds, pi.cds, sly.cds, spe.cds, spi.cds, stu.cds,
+         file = file.path(args$outdir, "all_CDS.RData"))
