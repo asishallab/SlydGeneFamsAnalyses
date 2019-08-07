@@ -3,7 +3,7 @@ require(SlydGeneFamsAnalyses)
 option_list = list(make_option(c("-w", "--workDir"), type = "character", 
     default = NULL, help = "The directory in which to find each family's work-dir and the respective MEME results in it.", 
     metavar = "character"), make_option(c("-o", "--outDir"), 
-    type = "character", default = NULL, help = "The path to the directory into which to write the binary results.", 
+    type = "character", default = NULL, help = "The path to the directory into which to write the binary results. Because the resulting RData file will be quite big, this should NOT be the package's 'data' dir. (Exception to the standard)", 
     metavar = "character"), make_option(c("-p", "--allInterProAnnosTbl"), 
     type = "character", default = NULL, help = "The path to the tabular InterProScan results for all proteomes analyzed in this package.", 
     metavar = "character"), make_option(c("-c", "--cores"), type = "integer", 

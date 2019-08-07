@@ -4,6 +4,7 @@
     data("geneFamilies", package = "SlydGeneFamsAnalyses")
     data("valdarScores", package = "SlydGeneFamsAnalyses")
     data("interProDb", package = "SlydGeneFamsAnalyses")
+    data("valdarScores", package = "SlydGeneFamsAnalyses")
     # data("mappResults", package = "SlydGeneFamsAnalyses")
     # Define 'all.cds' constant:
     if (exists("cag.cds") && exists("cam.cds") &&

@@ -11,7 +11,7 @@ option_list = list(
   make_option(
     c("-o", "--outDir"),
     type = "character",
-    default = detectCores(),
+    default = NULL,
     help = "The path to the directory into which to write the binary results.",
     metavar = "character"
   ),
@@ -21,6 +21,13 @@ option_list = list(
     default = detectCores(),
     help = "The number of cores to use in parallel. Default is the result of 'detectCores()', i.e. ALL.",
     metavar = "integer"
+  ),
+  make_option(
+    c("-m", "--mapMan4Annos"),
+    type = "character",
+    default = NULL,
+    help = "The path to the Mercator output file holding the MapMan4 Annotatiotns for the genes of this study.",
+    metavar = "character"
   )
 )
 
@@ -35,6 +42,9 @@ if (is.null(script.args$workDir)) {
 # Prepare multi core analysis:
 options(mc.cores = script.args$cores)
 message("Set mc.cores to ", script.args$cores)
+
+# Load MapMan4 Annotations:
+all.prots.mm4 <- readMercatorResultTable(script.args$mapMan4Annos, FALSE)
 
 # MEME results as a list of tables. Two per family:
 fams.meme <- readMemeResults(script.args$workDir)
@@ -76,34 +86,34 @@ if (!is.null(all.prots.mm4)) {
   }
 }
 
-# Create the plots with the MEME results:
-for (fam.nm in names(fams.meme[fams.meme.i])) {
-  fam.meme.branches.df <- fams.meme[[fam.nm]]$MEME.branches
-  if (!is.null(fam.meme.branches.df)) {
-    tryCatch({
-      fam.dir <- normalizePath(file.path(script.args$workDir,
-                                         fam.nm))
-      fam.aa.msa.fasta <- file.path(fam.dir, paste0(fam.nm,
-                                                    "_AA_MSA_orig_gene_ids.fa"))
-      fam.pfam.results <-
-        parseHmmer3DomTableOut(file.path(fam.dir,
-                                         paste0(
-                                           fam.nm, "_HMMER3_PfamA_domtblout.txt"
-                                         )))
-      generateInteractiveMsaPlot(fam.aa.msa.fasta,
-                                 fam.meme.branches.df,
-                                 fam.pfam.results,
-                                 fam.dir)
-    }, error = function(e) {
-      message(
-        "An error occurred when plotting MEME results for family '",
-        fam.nm,
-        "'. Will continue with next family.\n",
-        e
-      )
-    })
-  }
-}
+## Create the plots with the MEME results:
+#for (fam.nm in names(fams.meme[fams.meme.i])) {
+#  fam.meme.branches.df <- fams.meme[[fam.nm]]$MEME.branches
+#  if (!is.null(fam.meme.branches.df)) {
+#    tryCatch({
+#      fam.dir <- normalizePath(file.path(script.args$workDir,
+#                                         fam.nm))
+#      fam.aa.msa.fasta <- file.path(fam.dir, paste0(fam.nm,
+#                                                    "_AA_MSA_orig_gene_ids.fa"))
+#      fam.pfam.results <-
+#        parseHmmer3DomTableOut(file.path(fam.dir,
+#                                         paste0(
+#                                           fam.nm, "_HMMER3_PfamA_domtblout.txt"
+#                                         )))
+#      generateInteractiveMsaPlot(fam.aa.msa.fasta,
+#                                 fam.meme.branches.df,
+#                                 fam.pfam.results,
+#                                 fam.dir)
+#    }, error = function(e) {
+#      message(
+#        "An error occurred when plotting MEME results for family '",
+#        fam.nm,
+#        "'. Will continue with next family.\n",
+#        e
+#      )
+#    })
+#  }
+#}
 
 # Save results
 save(
