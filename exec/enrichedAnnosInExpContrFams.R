@@ -2,17 +2,10 @@ require(SlydGeneFamsAnalyses)
 
 option_list = list(
   make_option(
-    c("-w", "--mappResults"),
-    type = "character",
-    default = NULL,
-    help = "The binary (RData) file in which the parsed and loaded MAPP results have been stored. See script ./exec/readMappResults.R for details.",
-    metavar = "character"
-  ),
-  make_option(
     c("-o", "--outDir"),
     type = "character",
     default = NULL,
-    help = "The path to the directory into which to write the table of enriched MapMan4 Annos found in Datura genes with significant divergent sites in conserved protein domains.",
+    help = "The path to the directory in which to save the binary (RData) results.",
     metavar = "character"
   ),
   make_option(
@@ -35,11 +28,11 @@ opt_parser = OptionParser(option_list = option_list)
 script.args = parse_args(opt_parser)
 
 # Validate input:
-if (is.null(script.args$mappResults) ||
+if (
     is.null(script.args$allMapMan4Annos) ||
     is.null(script.args$outDir)) {
   stop(
-    "Please specify the required arguments '--mappResultsa, '--allMapMan4Annos', and '--outDir'."
+    "Please specify the required arguments '--allMapMan4Annos' and '--outDir'."
   )
 }
 

@@ -60,7 +60,8 @@ createGeneFamilyWorkingDirIfNotExists <- function(base.dir, gene.family.name) {
 #' dataframe is either loaded from a file 'name_mappings.txt' or created,
 #' stored in that file, and then returned.
 #' @export
-geneNameMappings <- function(gene.family.dir, gene.family.name, gene.fams.lst = gene.families) {
+geneNameMappings <- function(gene.family.dir, gene.family.name, 
+    gene.fams.lst = gene.families) {
     gene.fam.name.maps.path <- file.path(gene.family.dir, paste0(gene.family.name, 
         "_name_mappings.txt"))
     if (file.exists(gene.fam.name.maps.path)) {
@@ -70,8 +71,8 @@ geneNameMappings <- function(gene.family.dir, gene.family.name, gene.fams.lst = 
         gf.name.maps.df <- data.frame(original = gene.fams.lst[[gene.family.name]], 
             stringsAsFactors = FALSE)
         gf.name.maps.df$sanitized <- paste0("PROT", 1:length(gene.fams.lst[[gene.family.name]]))
-        write.table(gf.name.maps.df, gene.fam.name.maps.path, row.names = FALSE, 
-            quote = FALSE, sep = "\t")
+        write.table(gf.name.maps.df, gene.fam.name.maps.path, 
+            row.names = FALSE, quote = FALSE, sep = "\t")
         gf.name.maps.df
     }
 }
@@ -129,7 +130,8 @@ mapSanitizedToOriginalNames <- function(sanitized, mappings) {
 #'
 #' @return TRUE if and only if no error has occurred.
 #' @export
-loadAndSanitizeAAMsas <- function(path.2.msa.dir, working.dir, gene.families.names = names(gene.families)) {
+loadAndSanitizeAAMsas <- function(path.2.msa.dir, working.dir, 
+    gene.families.names = names(gene.families)) {
     msa.fls <- system(paste("ls", path.2.msa.dir, "| grep -P \"^OG.*\\.fa$\""), 
         intern = TRUE)
     names(msa.fls) <- sub("\\.fa$", "", msa.fls)
@@ -138,19 +140,20 @@ loadAndSanitizeAAMsas <- function(path.2.msa.dir, working.dir, gene.families.nam
     }
     mclapply(names(msa.fls), function(gene.fam) {
         msa.file <- msa.fls[[gene.fam]]
-        msa <- read.fasta(file.path(path.2.msa.dir, msa.file), seqtype = "AA", 
-            as.string = TRUE, strip.desc = TRUE)
+        msa <- read.fasta(file.path(path.2.msa.dir, msa.file), 
+            seqtype = "AA", as.string = TRUE, strip.desc = TRUE)
         names(msa) <- sanitizeOrthofinderGeneIds(names(msa))
         if (!all(names(msa) %in% names(all.cds))) {
-            warning("Some of the amino acid sequences in MSA '", msa.file, 
-                "' are not in the database of coding sequences ('all.cds')!")
+            warning("Some of the amino acid sequences in MSA '", 
+                msa.file, "' are not in the database of coding sequences ('all.cds')!")
         }
         gene.fam.wd <- createGeneFamilyWorkingDirIfNotExists(working.dir, 
             gene.fam)
         write.fasta(msa, names(msa), file.path(gene.fam.wd, paste0(gene.fam, 
             "_AA_MSA_orig_gene_ids.fa")))
         fam.gene.id.maps <- geneNameMappings(gene.fam.wd, gene.fam)
-        names(msa) <- mapOriginalToSanitizedNames(names(msa), fam.gene.id.maps)
+        names(msa) <- mapOriginalToSanitizedNames(names(msa), 
+            fam.gene.id.maps)
         write.fasta(msa, names(msa), file.path(gene.fam.wd, paste0(gene.fam, 
             "_AA_MSA.fa")))
         NULL
@@ -177,7 +180,8 @@ loadAndSanitizeAAMsas <- function(path.2.msa.dir, working.dir, gene.families.nam
 #'
 #' @return TRUE if and only if no error has occurred.
 #' @export
-loadAndSanitizeTrees <- function(path.2.trees.dir, working.dir, gene.families.names = names(gene.families)) {
+loadAndSanitizeTrees <- function(path.2.trees.dir, working.dir, 
+    gene.families.names = names(gene.families)) {
     tree.fls <- system(paste("ls", path.2.trees.dir, "| grep -P \"^OG.*\\_tree.txt$\""), 
         intern = TRUE)
     names(tree.fls) <- sub("\\_tree.txt$", "", tree.fls)
@@ -189,8 +193,8 @@ loadAndSanitizeTrees <- function(path.2.trees.dir, working.dir, gene.families.na
         fam.tree <- read.tree(file.path(path.2.trees.dir, tree.file))
         fam.tree$tip.label <- sanitizeOrthofinderGeneIds(fam.tree$tip.label)
         if (!all(fam.tree$tip.label %in% names(all.cds))) {
-            warning("Some of the gene identifier in tree '", tree.file, 
-                "' are not in the database of coding sequences ('all.cds')!")
+            warning("Some of the gene identifier in tree '", 
+                tree.file, "' are not in the database of coding sequences ('all.cds')!")
         }
         fam.tree$node.label <- NULL
         gene.fam.wd <- createGeneFamilyWorkingDirIfNotExists(working.dir, 
@@ -230,16 +234,16 @@ generateCodingSequenceMSAs <- function(working.dir, gene.families.names = names(
     mclapply(gene.fams.dirs, function(gene.fam) {
         gene.fam.wd <- normalizePath(file.path(working.dir, gene.fam))
         fam.cds <- all.cds[gene.families[[gene.fam]]]
-        fam.aa.msa <- seqinr::read.fasta(file.path(gene.fam.wd, paste0(gene.fam, 
-            "_AA_MSA_orig_gene_ids.fa")), seqtype = "AA", as.string = TRUE, 
-            strip.desc = TRUE)
+        fam.aa.msa <- seqinr::read.fasta(file.path(gene.fam.wd, 
+            paste0(gene.fam, "_AA_MSA_orig_gene_ids.fa")), seqtype = "AA", 
+            as.string = TRUE, strip.desc = TRUE)
         fam.cds.msa <- GeneFamilies::alignCDSSetWithAlignedAAsAsGuide(fam.cds, 
             fam.aa.msa)
         fam.gene.id.maps <- geneNameMappings(gene.fam.wd, gene.fam)
         names(fam.cds.msa) <- mapOriginalToSanitizedNames(names(fam.cds.msa), 
             fam.gene.id.maps)
-        seqinr::write.fasta(fam.cds.msa, names(fam.cds.msa), file.path(gene.fam.wd, 
-            paste0(gene.fam, "_CDS_MSA.fa")))
+        seqinr::write.fasta(fam.cds.msa, names(fam.cds.msa), 
+            file.path(gene.fam.wd, paste0(gene.fam, "_CDS_MSA.fa")))
         NULL
     })
     TRUE
@@ -273,14 +277,14 @@ generateMemeBatchFiles <- function(working.dir, hyphy.batch.files.dir,
         gene.fam.wd <- normalizePath(file.path(working.dir, gene.fam))
         fam.cds.msa.path <- file.path(gene.fam.wd, paste0(gene.fam, 
             "_CDS_MSA.fa"))
-        fam.tree.no.node.labels.path <- file.path(gene.fam.wd, paste0(gene.fam, 
-            "_phyl_tree.newick"))
+        fam.tree.no.node.labels.path <- file.path(gene.fam.wd, 
+            paste0(gene.fam, "_phyl_tree.newick"))
         fam.hyphy.meme.log.path <- file.path(gene.fam.wd, paste0(gene.fam, 
             "_HyPhy_MEME_log.txt"))
-        fam.hyphy.meme.output.path <- file.path(gene.fam.wd, paste0(gene.fam, 
-            "_HyPhy_MEME_output.txt"))
-        fam.hyphy.meme.batch.file.path <- file.path(gene.fam.wd, paste0(gene.fam, 
-            "_HyPhy_MEME_input.bf"))
+        fam.hyphy.meme.output.path <- file.path(gene.fam.wd, 
+            paste0(gene.fam, "_HyPhy_MEME_output.txt"))
+        fam.hyphy.meme.batch.file.path <- file.path(gene.fam.wd, 
+            paste0(gene.fam, "_HyPhy_MEME_input.bf"))
         brew(text = GeneFamilies::hyphy.meme.bf, output = fam.hyphy.meme.batch.file.path)
         NULL
     })
@@ -317,15 +321,16 @@ generateMemeBatchFiles <- function(working.dir, hyphy.batch.files.dir,
 #' 'MEME.branches', the respectively found subjects to positive selection
 #' passing the significance levels.
 #' @export
-readMemeResults <- function(work.dir, p.adjust.method = "BH", pval.cutoff = 0.05, 
-    empirical.bayes.factor.cutoff = 100, phyl.tree.leaf.regex = "^PROT\\d+$", 
-    report.original.gene.names = TRUE, gene.family.sizes = gene.families.sizes) {
+readMemeResults <- function(work.dir, p.adjust.method = "BH", 
+    pval.cutoff = 0.05, empirical.bayes.factor.cutoff = 100, 
+    phyl.tree.leaf.regex = "^PROT\\d+$", report.original.gene.names = TRUE, 
+    gene.family.sizes = gene.families.sizes) {
     norm.wd <- normalizePath(work.dir)
-    fams.meme.outs <- system(paste("find", norm.wd, "-type f", "-name '*_HyPhy_MEME_output.txt'"), 
-        intern = TRUE)
+    fams.meme.outs <- system(paste("find", norm.wd, "-type f", 
+        "-name '*_HyPhy_MEME_output.txt'"), intern = TRUE)
     fams.meme.branches <- paste0(fams.meme.outs, ".branches")
-    fam.nms <- sub("^.*/", "", sub("_HyPhy_MEME_output.txt$", "", 
-        fams.meme.outs))
+    fam.nms <- sub("^.*/", "", sub("_HyPhy_MEME_output.txt$", 
+        "", fams.meme.outs))
     names(fams.meme.outs) <- fam.nms
     names(fams.meme.branches) <- fam.nms
     fams.meme.df <- do.call(rbind, mclapply(fam.nms, function(fam) {
@@ -337,7 +342,8 @@ readMemeResults <- function(work.dir, p.adjust.method = "BH", pval.cutoff = 0.05
     fams.meme.df$p.adj <- p.adjust(fams.meme.df$p.value, method = p.adjust.method)
     
     setNames(mclapply(fam.nms, function(fam) {
-        m.o <- fams.meme.df[which(fams.meme.df$Family == fam), ]
+        m.o <- fams.meme.df[which(fams.meme.df$Family == fam), 
+            ]
         m.sites <- which(m.o$p.adj <= pval.cutoff)
         if (length(m.sites) > 0) {
             m.sites.tbl <- data.frame(MEME.site = m.sites, P.val = m.o[m.sites, 
@@ -349,8 +355,8 @@ readMemeResults <- function(work.dir, p.adjust.method = "BH", pval.cutoff = 0.05
                 grepl(phyl.tree.leaf.regex, m.b$Branch)), c("Site", 
                 "Branch")])
             meme.branches.df <- if (nrow(m.branches) > 0) {
-                fam.wd <- sub("/OG\\d+_HyPhy_MEME_output.txt$", "", 
-                  fams.meme.outs[[fam]])
+                fam.wd <- sub("/OG\\d+_HyPhy_MEME_output.txt$", 
+                  "", fams.meme.outs[[fam]])
                 if (report.original.gene.names) {
                   m.branches$Branch <- mapSanitizedToOriginalNames(m.branches$Branch, 
                     geneNameMappings(fam.wd, fam))
@@ -374,9 +380,9 @@ readMemeResults <- function(work.dir, p.adjust.method = "BH", pval.cutoff = 0.05
                     meme.site.p.adj <- m.sites.tbl[[mst.i, "P.adj"]]
                     data.frame(Protein = meme.branch, Gene.Family = fam, 
                       Gene.Family.Size = gene.family.sizes[[fam]], 
-                      unaligned.pos.sel.codon = unalign.site, aligned.pos.sel.codon = align.site, 
-                      MEME.site.p.value = meme.site.p.val, MEME.site.p.adj = meme.site.p.adj, 
-                      stringsAsFactors = FALSE)
+                      unaligned.pos.sel.codon = unalign.site, 
+                      aligned.pos.sel.codon = align.site, MEME.site.p.value = meme.site.p.val, 
+                      MEME.site.p.adj = meme.site.p.adj, stringsAsFactors = FALSE)
                   }))
                 }))
             } else NULL
@@ -400,12 +406,13 @@ parseHmmer3DomTableOut <- function(path.2.hmmer3.domtbl.out) {
         sep = "\t", header = FALSE)
     if (nrow(dom.tbl) > 0) {
         colnames(dom.tbl) <- c("target.name", "target.accession", 
-            "tlen", "query.name", "query.accession", "qlen", "full.sequence.E-value", 
-            "full.sequence.score", "full.sequence.bias", "this.domain.#", 
-            "this.domain.of", "this.domain.c-Evalue", "this.domain.i-Evalue", 
-            "this.domain.score", "this.domain.bias", "hmm.coord.from", 
-            "hmm.coord.to", "ali.coord.from", "ali.coord.to", "env.coord.from", 
-            "env.coord.to", "acc", "description.of.target")
+            "tlen", "query.name", "query.accession", "qlen", 
+            "full.sequence.E-value", "full.sequence.score", "full.sequence.bias", 
+            "this.domain.#", "this.domain.of", "this.domain.c-Evalue", 
+            "this.domain.i-Evalue", "this.domain.score", "this.domain.bias", 
+            "hmm.coord.from", "hmm.coord.to", "ali.coord.from", 
+            "ali.coord.to", "env.coord.from", "env.coord.to", 
+            "acc", "description.of.target")
         dom.tbl
     } else NULL
 }
@@ -450,13 +457,15 @@ generateInteractiveMsaPlot <- function(path.2.msa.fasta, meme.branches.tbl,
         gene.id <- pfam.hmmer3.domtbl$query.name[[i]]
         # Javascript starts counting at 0, not 1:
         pfam.hmmer3.domtbl$aligned.ali.coord.from[[i]] <- alignedForUnalignedAAPos(gene.id, 
-            pfam.hmmer3.domtbl$ali.coord.from[[i]], aa.msa) - 1
+            pfam.hmmer3.domtbl$ali.coord.from[[i]], aa.msa) - 
+            1
         pfam.hmmer3.domtbl$aligned.ali.coord.to[[i]] <- alignedForUnalignedAAPos(gene.id, 
             pfam.hmmer3.domtbl$ali.coord.to[[i]], aa.msa) - 1
     }
     fam.name <- sub("\\.[^.]+$", "", sub("^.*/", "", path.2.msa.fasta))
     out.html <- sub("\\.[^.]+$", ".html", sub("^.*/", "", path.2.msa.fasta))
-    brew(file = brew.template, output = file.path(output.dir, out.html))
+    brew(file = brew.template, output = file.path(output.dir, 
+        out.html))
 }
 
 #' For the argument gene family find the most frequent Pfam domains and
@@ -490,24 +499,26 @@ annotateGeneFamily <- function(gene.ids, fam.name, pfam.hmmer3.domtbl,
     if (length(pfam.freqs) > 0) {
         pfam.max.freq.acc <- names(pfam.freqs)[which(pfam.freqs == 
             max(pfam.freqs, na.rm = TRUE))]
-        pfam.max.freq.desc <- unlist(lapply(pfam.max.freq.acc, function(pfam.acc) {
-            pfam.hmmer3.domtbl[which(pfam.hmmer3.domtbl$target.accession == 
-                pfam.acc), "description.of.target"][[1]]
-        }))
+        pfam.max.freq.desc <- unlist(lapply(pfam.max.freq.acc, 
+            function(pfam.acc) {
+                pfam.hmmer3.domtbl[which(pfam.hmmer3.domtbl$target.accession == 
+                  pfam.acc), "description.of.target"][[1]]
+            }))
         fam.anno.df <- data.frame(Family = fam.name, anno.acc = pfam.max.freq.acc, 
             anno.desc = pfam.max.freq.desc, rel.freq = max(pfam.freqs, 
                 na.rm = TRUE)/length(gene.ids), stringsAsFactors = FALSE)
     }
     mm4.freqs <- table(mercator.map.man.4.tbl[which(mercator.map.man.4.tbl$IDENTIFIER %in% 
-        tolower(gene.ids) && !grepl(mm4.excl.bincodes.regex, mercator.map.man.4.tbl$BINCODE, 
-        perl = TRUE)), ]$BINCODE)
+        tolower(gene.ids) && !grepl(mm4.excl.bincodes.regex, 
+        mercator.map.man.4.tbl$BINCODE, perl = TRUE)), ]$BINCODE)
     if (length(mm4.freqs) > 0) {
-        mm4.max.freq.acc <- names(mm4.freqs)[which(mm4.freqs == max(mm4.freqs, 
-            na.rm = TRUE))]
-        mm4.max.freq.desc <- unlist(lapply(mm4.max.freq.acc, function(mm4.acc) {
-            mercator.map.man.4.tbl[which(mercator.map.man.4.tbl$BINCODE == 
-                mm4.acc), "NAME"][[1]]
-        }))
+        mm4.max.freq.acc <- names(mm4.freqs)[which(mm4.freqs == 
+            max(mm4.freqs, na.rm = TRUE))]
+        mm4.max.freq.desc <- unlist(lapply(mm4.max.freq.acc, 
+            function(mm4.acc) {
+                mercator.map.man.4.tbl[which(mercator.map.man.4.tbl$BINCODE == 
+                  mm4.acc), "NAME"][[1]]
+            }))
         fam.anno.df <- rbind(fam.anno.df, data.frame(Family = fam.name, 
             anno.acc = mm4.max.freq.acc, anno.desc = mm4.max.freq.desc, 
             rel.freq = max(mm4.freqs, na.rm = TRUE)/length(gene.ids), 
@@ -517,8 +528,8 @@ annotateGeneFamily <- function(gene.ids, fam.name, pfam.hmmer3.domtbl,
         fam.anno.df$size <- length(gene.ids)
         fam.anno.df
     } else {
-        data.frame(Family = fam.name, size = NA, anno.acc = NA, anno.desc = NA, 
-            rel.freq = NA, stringsAsFactors = FALSE)
+        data.frame(Family = fam.name, size = NA, anno.acc = NA, 
+            anno.desc = NA, rel.freq = NA, stringsAsFactors = FALSE)
     }
 }
 
@@ -565,8 +576,9 @@ readMappResult <- function(path.2.mapp.result.tbl, fam.name = NULL) {
         warning("MAPP result table does not exist or is empty")
         return(NULL)
     }
-    mapp.df <- read.table(path.2.mapp.result.tbl, sep = "\t", header = TRUE, 
-        stringsAsFactors = FALSE, quote = "", na.string = "N/A")
+    mapp.df <- read.table(path.2.mapp.result.tbl, sep = "\t", 
+        header = TRUE, stringsAsFactors = FALSE, quote = "", 
+        na.string = "N/A")
     if (!is.null(fam.name)) 
         mapp.df$Family <- fam.name
     mapp.df
@@ -583,11 +595,12 @@ readMappResult <- function(path.2.mapp.result.tbl, fam.name = NULL) {
 #' @return A character matrix representing the MSA. Rownames hold the gene
 #' names.
 #' @export
-readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
+readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, 
+    seqtype = "AA") {
     msa.fasta <- read.fasta(path.2.msa, seqtype = seqtype, as.string = TRUE, 
         strip.desc = TRUE)
-    matrix(unlist(lapply(msa.fasta, strsplit, split = NULL)), byrow = TRUE, 
-        nrow = length(msa.fasta), dimnames = list(names(msa.fasta), 
+    matrix(unlist(lapply(msa.fasta, strsplit, split = NULL)), 
+        byrow = TRUE, nrow = length(msa.fasta), dimnames = list(names(msa.fasta), 
             c()))
 }
 
@@ -617,24 +630,26 @@ readMultipleSequenceAlignmentAsMatrix <- function(path.2.msa, seqtype = "AA") {
 #' 'Protein', 'Site', 'Divergent.AA', and 'AA.p.value.adj'. Returns NULL if no
 #' matches were found.
 #' @export
-findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, fam.aa.msa, 
-    fam.name, genes.of.interest = names(slyd.cds), p.adjusted.cutoff = 0.05, 
-    mapp.aa.p.val.cols = setNames(c("A.1.adj", "C.1.adj", "D.1.adj", 
-        "E.1.adj", "F.1.adj", "G.1.adj", "H.1.adj", "I.1.adj", "K.1.adj", 
-        "L.1.adj", "M.1.adj", "N.1.adj", "P.1.adj", "Q.1.adj", "R.1.adj", 
-        "S.1.adj", "T.1.adj", "V.1.adj", "W.1.adj", "Y.1.adj"), c("A", 
-        "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", 
+findGenesWithPhysicoChemicalDivergentAA <- function(mapp.tbl, 
+    fam.aa.msa, fam.name, genes.of.interest = names(slyd.cds), 
+    p.adjusted.cutoff = 0.05, mapp.aa.p.val.cols = setNames(c("A.1.adj", 
+        "C.1.adj", "D.1.adj", "E.1.adj", "F.1.adj", "G.1.adj", 
+        "H.1.adj", "I.1.adj", "K.1.adj", "L.1.adj", "M.1.adj", 
+        "N.1.adj", "P.1.adj", "Q.1.adj", "R.1.adj", "S.1.adj", 
+        "T.1.adj", "V.1.adj", "W.1.adj", "Y.1.adj"), c("A", "C", 
+        "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", 
         "Q", "R", "S", "T", "V", "W", "Y"))) {
     fam.aa.msa.interest <- fam.aa.msa[intersect(rownames(fam.aa.msa), 
         genes.of.interest), , drop = FALSE]
     sign.p.val.i <- which(mapp.tbl$Column.p.value.adj <= p.adjusted.cutoff)
-    if (nrow(fam.aa.msa.interest) > 0 && length(sign.p.val.i) > 0) {
+    if (nrow(fam.aa.msa.interest) > 0 && length(sign.p.val.i) > 
+        0) {
         res.df <- do.call(rbind, lapply(sign.p.val.i, function(row.i) {
             aa.sign <- names(mapp.aa.p.val.cols)[which(mapp.tbl[row.i, 
                 mapp.aa.p.val.cols] <= p.adjusted.cutoff)]
             pos <- mapp.tbl[[row.i, "Position"]]
-            genes.w.diverg.aa <- which(fam.aa.msa.interest[, pos] %in% 
-                aa.sign)
+            genes.w.diverg.aa <- which(fam.aa.msa.interest[, 
+                pos] %in% aa.sign)
             if (length(genes.w.diverg.aa) > 0) {
                 divergent.aas <- fam.aa.msa.interest[genes.w.diverg.aa, 
                   pos]
@@ -720,8 +735,8 @@ printAaMsaWithSelection <- function(fam.dir, aa.msa.file, selected.pos.and.genes
     feature.tex <- ""
     caption.tex <- ""
     if (!is.null(pfam.tbl)) {
-        msa.fa <- read.fasta(msa.fasta.path, seqtype = "AA", strip.desc = TRUE, 
-            as.string = TRUE)
+        msa.fa <- read.fasta(msa.fasta.path, seqtype = "AA", 
+            strip.desc = TRUE, as.string = TRUE)
         prot.dom.lst <- list()
         tinted.tex <- paste(unlist(lapply(1:nrow(pfam.tbl), function(i) {
             prot <- pfam.tbl[[i, "query.name"]]
@@ -732,12 +747,13 @@ printAaMsaWithSelection <- function(fam.dir, aa.msa.file, selected.pos.and.genes
                 msa.fa)
             aligned.end <- alignedForUnalignedAAPos(prot, unalign.end, 
                 msa.fa)
-            if (prot %in% aa.msa.prot.ids && aligned.start >= begin.codon && 
-                aligned.end <= end.codon) {
+            if (prot %in% aa.msa.prot.ids && aligned.start >= 
+                begin.codon && aligned.end <= end.codon) {
                 pdl.entry <- paste(pfam.tbl[[i, "target.accession"]], 
                   pfam.tbl[[i, "this.domain.#"]], sep = " No.")
                 prot.dom.lst[[pdl.entry]] <<- c(min(prot.dom.lst[[pdl.entry]], 
-                  aligned.start), max(prot.dom.lst[[pdl.entry]], aligned.end))
+                  aligned.start), max(prot.dom.lst[[pdl.entry]], 
+                  aligned.end))
                 paste0("\\tintregion{", gene.no, "}{", unalign.start, 
                   "..", unalign.end, "}")
             } else NULL
@@ -746,33 +762,60 @@ printAaMsaWithSelection <- function(fam.dir, aa.msa.file, selected.pos.and.genes
         feat.pos <- c("top", "ttop", "tttop", "ttttop", "bottom", 
             "bbottom", "bbbottom", "bbbbottom")
         feat.pos.i <- 0
-        feature.tex <- paste(unlist(lapply(names(prot.dom.lst), function(prot.dom) {
-            first.prot.unalign.start <- unalignedAAforAlignedAAPos(first.prot, 
-                prot.dom.lst[[prot.dom]][[1]], msa.fa)
-            first.prot.unalign.end <- unalignedAAforAlignedAAPos(first.prot, 
-                prot.dom.lst[[prot.dom]][[2]], msa.fa)
-            feat.pos.i <<- if (feat.pos.i + 1 > length(feat.pos)) {
-                1
-            } else {
-                feat.pos.i + 1
-            }
-            paste0("\\feature{", feat.pos[[feat.pos.i]], "}{1}{", 
-                first.prot.unalign.start, "..", first.prot.unalign.end, 
-                "}{brace}{", prot.dom, "}")
-        })), collapse = "\n")
+        feature.tex <- paste(unlist(lapply(names(prot.dom.lst), 
+            function(prot.dom) {
+                first.prot.unalign.start <- unalignedAAforAlignedAAPos(first.prot, 
+                  prot.dom.lst[[prot.dom]][[1]], msa.fa)
+                first.prot.unalign.end <- unalignedAAforAlignedAAPos(first.prot, 
+                  prot.dom.lst[[prot.dom]][[2]], msa.fa)
+                feat.pos.i <<- if (feat.pos.i + 1 > length(feat.pos)) {
+                  1
+                } else {
+                  feat.pos.i + 1
+                }
+                paste0("\\feature{", feat.pos[[feat.pos.i]], 
+                  "}{1}{", first.prot.unalign.start, "..", first.prot.unalign.end, 
+                  "}{brace}{", prot.dom, "}")
+            })), collapse = "\n")
         caption.tex <- paste0("\\showcaption[bottom]{Protein Domains:\\\\", 
-            paste(unlist(lapply(unique(names(prot.dom.lst)), function(prot.dom.nm) {
-                prot.dom.acc <- sub(" No\\.\\d+$", "", prot.dom.nm)
-                prot.dom.coords <- prot.dom.lst[[prot.dom.nm]]
-                paste0(prot.dom.nm, " (", prot.dom.coords[[1]], "-", 
-                  prot.dom.coords[[2]], ") - ", pfam.tbl[which(pfam.tbl$target.accession == 
-                    prot.dom.acc), "description.of.target"][[1]])
-            })), collapse = "\\\\"), "}")
+            paste(unlist(lapply(unique(names(prot.dom.lst)), 
+                function(prot.dom.nm) {
+                  prot.dom.acc <- sub(" No\\.\\d+$", "", prot.dom.nm)
+                  prot.dom.coords <- prot.dom.lst[[prot.dom.nm]]
+                  paste0(prot.dom.nm, " (", prot.dom.coords[[1]], 
+                    "-", prot.dom.coords[[2]], ") - ", pfam.tbl[which(pfam.tbl$target.accession == 
+                      prot.dom.acc), "description.of.target"][[1]])
+                })), collapse = "\\\\"), "}")
     }
     msa::msaPrettyPrint(m, c(begin.codon, end.codon), file = file.path(fam.dir, 
         paste0(plot.pdf.prefix, "_", begin.codon, "-", end.codon, 
             ".pdf")), shadingMode = "functional", askForOverwrite = FALSE, 
         shadingModeArg = "chemical", output = "pdf", furtherCode = paste("\\tintdefault{weak}", 
-            gene.name.color.tex, frameblocks.emphregions.tex, tinted.tex, 
-            caption.tex, caption.tex, feature.tex, sep = "\n"), showNumbering = "none")
+            gene.name.color.tex, frameblocks.emphregions.tex, 
+            tinted.tex, caption.tex, caption.tex, feature.tex, 
+            sep = "\n"), showNumbering = "none")
+}
+
+
+#' Parses the result of CAFE's python script cafetutorial_report_analysis.py
+#' which gives linewise the families that are significantly expanded, including
+#' number of genes gained or lost.
+#'
+#' @param path.2.cafe.res - The path to the output file to parse
+#' @param spec.names - A character vector of the species names as they appear
+#' in the argument file \code{path.2.cafe.res}
+#'
+#' @return A data.frame with the following columns: 'Species', 'Family', and
+#' 'Gene.No.Change'
+#' @export
+parseCafeSignExpContrFamFile <- function(path.2.cafe.res, spec.names) {
+    cafe.res <- readLines(path.2.cafe.res)
+    do.call(rbind, lapply(spec.names, function(spec) {
+        spec.line <- cafe.res[grepl(paste0("^", spec), cafe.res)]
+        spec.fams.str <- strsplit(spec.line, ":\t")[[1]][[2]]
+        spec.fams.raw <- strsplit(spec.fams.str, ",")[[1]]
+        data.frame(Species = spec, Family = sub("\\[[0-9+\\-*]+\\]$", 
+            "", spec.fams.raw, perl = TRUE), Gene.No.Change = as.numeric(sub("^.*\\[", 
+            "", sub("\\*?\\]$", "", spec.fams.raw))), stringsAsFactors = FALSE)
+    }))
 }
